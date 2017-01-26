@@ -38,8 +38,8 @@ myMainwindow::myMainwindow(QWidget *parent) :
     scene ->setSceneRect(-10000, -10000, 20000, 20000);
     view->setScene(scene);
     view->setRenderHint(QPainter::TextAntialiasing);
-    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 
 
@@ -48,11 +48,7 @@ myMainwindow::myMainwindow(QWidget *parent) :
     layout->addWidget(view);
     widget->setLayout(layout);
 
-//    view->show();
-
     initialize();
-
-    setWindowTitle(tr("HPDM-Win"));
 }
 
 #ifndef QT_NO_CONTEXTMENU
@@ -113,6 +109,8 @@ void myMainwindow::about()
 
 void myMainwindow::initialize()
 {
+    setWindowTitle(tr("HPDM-Win"));
+
     head = new component();
     dummy = head;
     head->setIndex(0);
@@ -121,6 +119,7 @@ void myMainwindow::initialize()
 
     createActions();
     createMenus();
+
 }
 
 void myMainwindow::createActions()
@@ -152,6 +151,8 @@ void myMainwindow::createActions()
     enableDragAct = new QAction(tr("&Enable Dragging"),this);
 //    enableDragAct->setShortcuts(QKeySequence::New);
     enableDragAct->setStatusTip(tr("Toggle dragging"));
+    enableDragAct->setCheckable(true);
+    enableDragAct->setChecked(true);
     connect(enableDragAct,&QAction::toggled,this,&myMainwindow::enableDrag);
 
     helpAct = new QAction(tr("&Help"),this);

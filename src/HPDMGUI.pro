@@ -16,12 +16,16 @@ SOURCES += main.cpp\
     myscene.cpp \
     myview.cpp \
     component.cpp \
-    mymainwindow.cpp
+    mymainwindow.cpp \
+    mycompdialog.cpp \
+    link.cpp
 
 HEADERS  += \
     myscene.h \
     myview.h \
     component.h \
-    mymainwindow.h
+    mymainwindow.h \
+    mycompdialog.h \
+    link.h
 
 FORMS    +=

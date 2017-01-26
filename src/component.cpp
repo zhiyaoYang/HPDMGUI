@@ -64,7 +64,8 @@ void component::draw()
     rectangle->setPen(blackpen);
 
     text->moveBy(-20,18);
-    description = "test component";
+    text->setFlags(QGraphicsItem::ItemIsMovable);
+    //todo: restrict the area where this text item can be moved
     text->setParentItem(this);
 
 }
@@ -79,11 +80,6 @@ void component::setMovable(bool movable)
         this->parentItem()->setFlags(QGraphicsItem::ItemIsSelectable);
 
     }
-}
-
-int component::getIndex()
-{
-    return index;
 }
 
 QRectF component::boundingRect() const
@@ -104,8 +100,3 @@ QVariant component::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
     return QGraphicsItem::itemChange(change,value);
 }
 
-
-void component::setIndex(int i)
-{
-    index = i;
-}

@@ -32,6 +32,7 @@ public slots:
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
 

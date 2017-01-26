@@ -3,6 +3,7 @@
 
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QString>
 
 class component : public QGraphicsItem
 {
@@ -15,12 +16,14 @@ public:
     QPointF getPos();
     void draw();
     void setMovable(bool movable);
-    void setIndex(int i);
-    int getIndex();
+    void setIndex(int i){index = i;}
+    int getIndex(){return index;}
+    void setCompName(QString name){componentName = name;}
+    QString getCompName(){return componentName;}
+    void setCompDescription(QString des){description = des;}
+    QString getCompDescription(){return description;}
 
     component* next;
-    QString componentName;
-    QString description;
     QGraphicsSimpleTextItem * text;
 
 public slots:
@@ -33,7 +36,10 @@ private:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     QGraphicsRectItem * rectangle;
+
     int index;
+    QString componentName;
+    QString description;
 
 };
 

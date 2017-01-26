@@ -20,6 +20,7 @@
 #include <QGraphicsTextItem>
 #include <QObject>
 #include "component.h"
+#include "mycompdialog.h"
 
 #include <QGraphicsItem>
 #include <QDebug>
@@ -52,7 +53,7 @@ void myScene::drawComponent(component * comp)
 {
     QPen pen(Qt::white);
     rect = this->addRect(mousex-30,mousey-30,+60,+60);
-    rect->setFlags(QGraphicsItem::ItemIsMovable/*|QGraphicsItem::ItemIsSelectable*/);
+    rect->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
     rect->setPen(pen);
     rect->setZValue(2);
 
@@ -64,7 +65,9 @@ void myScene::drawComponent(component * comp)
     head->setIndex(tempIndex+1);
 
     head->draw();
-    head->text->setText("<C"+QString::number(head->getIndex())+">");
+    head->text->setText("<Component"+QString::number(head->getIndex())+">");
+    head->setCompName("test component name");
+    head->setCompDescription("test component description");
 
 
     head->moveBy(mousex,mousey);
@@ -82,9 +85,6 @@ void myScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 //    QList <QGraphicsItem *> items = this->selectedItems();
 
-
-
-
     if(isDrawComponent){//for adding components
         mousex = event->scenePos().x();
         mousey = event->scenePos().y();
@@ -97,3 +97,18 @@ void myScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 }
 
+void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsScene::mouseDoubleClickEvent(event);
+    QList <QGraphicsItem *> items = this->selectedItems();
+    if(!items.isEmpty()){
+        //if selected a component
+        component* comp = dynamic_cast<component*>(items.first()->childItems().first());
+        myCompDialog * compDialog = new myCompDialog(comp);
+        compDialog->exec();
+
+    }
+
+
+
+}
