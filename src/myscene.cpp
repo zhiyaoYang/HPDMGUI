@@ -15,7 +15,7 @@
 #include "myscene.h"
 #include <QtGui>
 #include <QGraphicsSceneMouseEvent>
-#include "mainwindow.h"
+#include "mymainwindow.h"
 #include <QPen>
 #include <QGraphicsTextItem>
 #include <QObject>

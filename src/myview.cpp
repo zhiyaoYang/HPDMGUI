@@ -12,7 +12,7 @@
 
 
 #include "myview.h"
-#include "mainwindow.h"
+#include "mymainwindow.h"
 #include "component.h"
 #include <QWheelEvent>
 #include <QDebug>
