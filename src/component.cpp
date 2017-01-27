@@ -11,7 +11,7 @@ component::component()
     text = new QGraphicsSimpleTextItem(this);
     next = NULL;
 
-    this->setFlags(QGraphicsItem::ItemIsSelectable);
+    this->setZValue(2);
 }
 
 void component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -74,7 +74,8 @@ void component::setMovable(bool movable)
 {
     if(movable){
         this->parentItem()->setFlags(QGraphicsItem::ItemIsSelectable
-                       |QGraphicsItem::ItemIsMovable);
+                       |QGraphicsItem::ItemIsMovable
+                                     |QGraphicsItem::ItemSendsScenePositionChanges);
     }
     else{
         this->parentItem()->setFlags(QGraphicsItem::ItemIsSelectable);
@@ -95,8 +96,17 @@ QRectF component::boundingRect() const
     return rect;
 }
 
-QVariant component::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
+QVariant component::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    qDebug()<<change;
+    if(/*change == ItemScenePositionHasChanged*/change == ItemPositionChange && scene()){
+        qDebug()<<"pos change";
+        if(!myLinks.isEmpty()){
+            foreach(link* myLink,myLinks){
+                myLink->trackComp();
+            }
+        }
+    }
     return QGraphicsItem::itemChange(change,value);
 }
 

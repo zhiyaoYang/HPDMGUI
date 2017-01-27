@@ -16,10 +16,11 @@ public:
 
     link(component * fromComp, component * toComp);
 
-    component *comp1() const {return myComp1;}
-    component *comp2() const {return myComp2;}
+    component *getComp1(){return myComp1;}
+    component *getComp2(){return myComp2;}
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void trackComp();
 
 private:
 
@@ -27,7 +28,7 @@ private:
     component* myComp2;
     QGraphicsLineItem * line;
 
-    void trackComp();
+    QRectF boundingRect() const;
     void setLineColor();
 
 };

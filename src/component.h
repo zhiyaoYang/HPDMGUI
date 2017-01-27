@@ -4,6 +4,11 @@
 #include <QGraphicsItem>
 #include <QPainter>
 #include <QString>
+#include <QSet>
+
+#include "link.h"
+
+class link;
 
 class component : public QGraphicsItem
 {
@@ -16,6 +21,8 @@ public:
     QPointF getPos();
     void draw();
     void setMovable(bool movable);
+    void addLink(link* mLink){myLinks.insert(mLink);}
+    void removeLink(link* mLink){myLinks.remove(mLink);}
     void setIndex(int i){index = i;}
     int getIndex(){return index;}
     void setCompName(QString name){componentName = name;}
@@ -25,6 +32,7 @@ public:
 
     component* next;
     QGraphicsSimpleTextItem * text;
+    QSet<link *> myLinks;
 
 public slots:
 
@@ -36,6 +44,7 @@ private:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     QGraphicsRectItem * rectangle;
+
 
     int index;
     QString componentName;

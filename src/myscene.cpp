@@ -21,6 +21,7 @@
 #include <QObject>
 #include "component.h"
 #include "mycompdialog.h"
+#include "link.h"
 
 #include <QGraphicsItem>
 #include <QDebug>
@@ -40,7 +41,7 @@ extern component* head;
 extern component* dummy;
 extern component* tempComponent;
 
-extern bool isDrawComponent;
+extern QString sceneAction;
 
 
 myScene::myScene()
@@ -74,6 +75,8 @@ void myScene::drawComponent(component * comp)
 
     head->setParentItem(rect);
 
+    head->setMovable(true);
+
 }
 
 
@@ -85,14 +88,14 @@ void myScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 //    QList <QGraphicsItem *> items = this->selectedItems();
 
-    if(isDrawComponent){//for adding components
+    if(sceneAction == "newComponent"){//for adding components
         mousex = event->scenePos().x();
         mousey = event->scenePos().y();
         drawComponent(tempComponent);
 
         QApplication::restoreOverrideCursor();
 
-        isDrawComponent = false;
+        sceneAction = "";
     }
 
 }
@@ -101,11 +104,76 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mouseDoubleClickEvent(event);
     QList <QGraphicsItem *> items = this->selectedItems();
+    QMessageBox *mb;
+
     if(!items.isEmpty()){
-        //if selected a component
-        component* comp = dynamic_cast<component*>(items.first()->childItems().first());
-        myCompDialog * compDialog = new myCompDialog(comp);
-        compDialog->exec();
+        QGraphicsItem* tempItem = items.first();
+        qDebug()<<tempItem->zValue()<<tempItem->scenePos()<<tempItem->flags();
+        if(sceneAction == ""){//evoke property dialog
+            if(tempItem->zValue()==2){//component
+                component* comp = dynamic_cast<component*>(tempItem->childItems().first());
+                qDebug()<<"linked?"<<!comp->myLinks.isEmpty();
+                myCompDialog * compDialog = new myCompDialog(comp);
+                compDialog->exec();
+            }
+            else if(tempItem->zValue()==0){//link
+                qDebug()<<"a link!";
+            }
+
+        }
+        else if(sceneAction == "makeLink"){//select component to make link
+            if(tempItem->zValue()==2){//component
+                component* comp = dynamic_cast<component*>(tempItem->childItems().first());
+                QApplication::restoreOverrideCursor();
+
+                if(selectedComponent.isEmpty()){//fist component
+                    selectedComponent.append(comp);
+                    mb = new QMessageBox("Making Links",
+                                         "Please double click the other component of the new link.",
+                                         QMessageBox::Information,
+                                         QMessageBox::Yes,
+                                         QMessageBox::Cancel,
+                                         QMessageBox::NoButton);
+                    if(mb->exec() == QMessageBox::Cancel){
+                        selectedComponent.clear();
+                        sceneAction = "";
+                    }
+                    else{
+                        QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
+                    }
+                }
+                else if(selectedComponent.count()==1){//second component
+                    if(comp==selectedComponent.first()){//selected the same component
+                        mb = new QMessageBox("Making Links",
+                                             "Please select two different components to link.\nDo you want to select another component?",
+                                             QMessageBox::Warning,
+                                             QMessageBox::Yes,
+                                             QMessageBox::Cancel,
+                                             QMessageBox::NoButton);
+                        if(mb->exec()== QMessageBox::Yes){
+                            QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
+                        }
+                        else{
+                            selectedComponent.clear();
+                            sceneAction = "";
+                        }
+                    }
+                    else{//link two selected components
+                        link* myLink = new link(comp,selectedComponent.first());
+                        this->addItem(myLink);
+                        qDebug()<<"evoke link dialog";
+//                        myLinkDialog * linkDialog = new myLinkDialog(myLink);
+//                        linkDialog->exec();
+
+                        selectedComponent.clear();
+                        sceneAction = "";
+                    }
+
+                }
+            }
+
+        }
+
 
     }
 

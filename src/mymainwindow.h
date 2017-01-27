@@ -33,6 +33,7 @@ private slots:
 
     //edit menu
     void newComponent();
+    void newLink();
     void enableDrag(bool arg1);
 
     //help menu
@@ -57,6 +58,7 @@ private:
     QAction *saveAct;
     QAction *exitAct;
     QAction *newCompAct;
+    QAction *newLinkAct;
     QAction *enableDragAct;
     QAction *helpAct;
     QAction *aboutAct;

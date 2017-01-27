@@ -11,6 +11,7 @@
 #include <QGraphicsTextItem>
 #include "myview.h"
 #include "component.h"
+#include <QList>
 
 QT_BEGIN_NAMESPACE
 
@@ -38,7 +39,7 @@ private:
 
     QGraphicsRectItem * rect;
     myView* theView;
-
+    QList<component*> selectedComponent;
 
 };
 

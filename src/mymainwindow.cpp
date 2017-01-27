@@ -24,7 +24,7 @@ component * dummy;
 component * head;
 component * tempComponent;
 
-bool isDrawComponent;
+QString sceneAction;
 
 myMainwindow::myMainwindow(QWidget *parent) :
     QMainWindow(parent)
@@ -84,8 +84,14 @@ void myMainwindow::newComponent()
 {
     //draw a component
     tempComponent = new component();
+    QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));//later move to component selection dialog
+    sceneAction = "newComponent";
+}
+
+void myMainwindow::newLink()
+{
     QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
-    isDrawComponent = true;
+    sceneAction = "makeLink";
 }
 
 void myMainwindow::enableDrag(bool arg1)
@@ -115,7 +121,7 @@ void myMainwindow::initialize()
     dummy = head;
     head->setIndex(0);
 
-    isDrawComponent = false;
+    sceneAction = "";
 
     createActions();
     createMenus();
@@ -148,6 +154,10 @@ void myMainwindow::createActions()
     newCompAct->setStatusTip(tr("Add a new component"));
     connect(newCompAct,&QAction::triggered,this,&myMainwindow::newComponent);
 
+    newLinkAct = new QAction(tr("&New Link"),this);
+    newLinkAct->setStatusTip(tr("Add a new link"));
+    connect(newLinkAct,&QAction::triggered,this,&myMainwindow::newLink);
+
     enableDragAct = new QAction(tr("&Enable Dragging"),this);
 //    enableDragAct->setShortcuts(QKeySequence::New);
     enableDragAct->setStatusTip(tr("Toggle dragging"));
@@ -178,6 +188,7 @@ void myMainwindow::createMenus()
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(newCompAct);
+    editMenu->addAction(newLinkAct);
     editMenu->addSeparator();
     editMenu->addAction(enableDragAct);
 
