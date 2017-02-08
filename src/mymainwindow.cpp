@@ -18,6 +18,7 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QApplication>
+#include <QGraphicsItem>
 
 
 component * dummy;
@@ -92,15 +93,12 @@ void myMainwindow::newLink()
 {
     QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
     sceneAction = "makeLink";
+    enableDrag(false);//lock drag of components and texts
 }
 
-void myMainwindow::enableDrag(bool arg1)
+void myMainwindow::enableDrag(bool compDrag)
 {
-    component* iterator = dummy;
-    while(iterator->next!=NULL){
-        iterator = iterator->next;
-        iterator->setMovable(arg1);
-    }
+    scene->enableDrag(compDrag);
 }
 
 void myMainwindow::help()
@@ -125,6 +123,8 @@ void myMainwindow::initialize()
 
     createActions();
     createMenus();
+    createDockWindows();
+    createStatusBar();
 
 }
 
@@ -195,4 +195,22 @@ void myMainwindow::createMenus()
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(helpAct);
     helpMenu->addAction(aboutAct);
+}
+
+void myMainwindow::createDockWindows()
+{
+    QDockWidget * dock = new QDockWidget(tr("Component"),this);
+    dock->setAllowedAreas(Qt::RightDockWidgetArea);
+    introduction = new QListWidget(dock);
+    introduction->addItems(QStringList()
+                           <<"index"
+                           <<"description"
+                           <<"properties");
+    dock->setWidget(introduction);
+    addDockWidget(Qt::RightDockWidgetArea,dock);
+}
+
+void myMainwindow::createStatusBar()
+{
+
 }

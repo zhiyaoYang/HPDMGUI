@@ -40,6 +40,7 @@ double mousey;
 extern component* head;
 extern component* dummy;
 extern component* tempComponent;
+extern myMainwindow * theMainWindow;
 
 extern QString sceneAction;
 
@@ -76,6 +77,22 @@ void myScene::drawComponent(component * comp)
     head->setParentItem(rect);
 
     head->setMovable(true);
+
+}
+
+void myScene::enableDrag(bool compDrag, bool textDrag)
+{
+    component* iterator = dummy;
+    while(iterator->next!=NULL){
+        iterator = iterator->next;
+        iterator->setMovable(compDrag);
+        if(compDrag){
+            iterator->text->setFlags(QGraphicsItem::ItemIsFocusable);
+        }
+        else {
+            iterator->text->setFlags(QGraphicsItem::ItemIsMovable);
+        }
+    }
 
 }
 
@@ -143,7 +160,15 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                     }
                 }
                 else if(selectedComponent.count()==1){//second component
-                    if(comp==selectedComponent.first()){//selected the same component
+
+                    component* tempComp = selectedComponent.first();
+                    QSet<component*> linkedComps;
+                    foreach(link* myLink, comp->myLinks){
+                        linkedComps.insert(myLink->getComp1());
+                        linkedComps.insert(myLink->getComp2());
+                    }
+
+                    if(comp==tempComp){//selected the same component
                         mb = new QMessageBox("Making Links",
                                              "Please select two different components to link.\nDo you want to select another component?",
                                              QMessageBox::Warning,
@@ -158,13 +183,37 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                             sceneAction = "";
                         }
                     }
+                    else if(linkedComps.contains(tempComp)){//existing link between the two components
+
+                        mb = new QMessageBox("Making Links",
+                                             "There is already a link between the selected components.\nDo you want to select another component?",
+                                             QMessageBox::Warning,
+                                             QMessageBox::Yes,
+                                             QMessageBox::Cancel,
+                                             QMessageBox::NoButton);
+                        if(mb->exec()== QMessageBox::Yes){
+                            QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
+                        }
+                        else{
+                            selectedComponent.clear();
+                            sceneAction = "";
+                        }
+                    }
                     else{//link two selected components
-                        link* myLink = new link(comp,selectedComponent.first());
+                        link* myLink = new link(comp,tempComp);
                         this->addItem(myLink);
                         qDebug()<<"evoke link dialog";
+
 //                        myLinkDialog * linkDialog = new myLinkDialog(myLink);
 //                        linkDialog->exec();
 
+                        enableDrag(true);
+
+                        QApplication::restoreOverrideCursor();
+
+
+//http://stackoverflow.com/questions/8187807/itemchanged-never-called-on-qgraphicsitem
+//http://doc.qt.io/qt-5/qtwidgets-graphicsview-dragdroprobot-example.html
                         selectedComponent.clear();
                         sceneAction = "";
                     }

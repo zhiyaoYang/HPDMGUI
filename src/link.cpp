@@ -25,8 +25,6 @@ void link::trackComp()
 
     line->setLine(QLineF(myComp2->scenePos(),myComp1->scenePos()));
 
-    qDebug()<<"tracking comp"<<myComp2->scenePos()<<myComp1->scenePos();
-
 
 //    myArrow->setPos((myFromNode->scenePos().x()+myToNode->scenePos().x())/2,(myFromNode->scenePos().y()+myToNode->scenePos().y())/2);
 //    if(dX>=0)

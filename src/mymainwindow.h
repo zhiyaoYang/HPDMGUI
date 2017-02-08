@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMenu>
 #include <QAction>
+#include <QtWidgets>
 
 #include "myscene.h"
 #include "myview.h"
@@ -34,7 +35,7 @@ private slots:
     //edit menu
     void newComponent();
     void newLink();
-    void enableDrag(bool arg1);
+    void enableDrag(bool compDrag);
 
     //help menu
     void help();
@@ -45,6 +46,8 @@ private:
     void initialize();
     void createActions();
     void createMenus();
+    void createDockWindows();
+    void createStatusBar();
 
     myScene *scene;
     myView *view;
@@ -62,6 +65,9 @@ private:
     QAction *enableDragAct;
     QAction *helpAct;
     QAction *aboutAct;
+
+    QListWidget *introduction;
+    QTextEdit *textEdit;
 
 
 };
