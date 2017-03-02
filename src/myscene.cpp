@@ -128,18 +128,24 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     if(!items.isEmpty()){
         QGraphicsItem* tempItem = items.first();
-        qDebug()<<tempItem->zValue()<<tempItem->scenePos()<<tempItem->flags();
+        qDebug()<<tempItem<<tempItem->scenePos()<<tempItem->flags()<<tempItem->childItems().count();
         if(sceneAction == ""){//evoke property dialog
             if(tempItem->zValue()==2){//component
                 component* comp = dynamic_cast<component*>(tempItem->childItems().first());
-                qDebug()<<"linked?"<<!comp->myLinks.isEmpty();
                 myCompDialog * compDialog = new myCompDialog(comp);
                 compDialog->exec();
             }
             else if(tempItem->zValue()==0){//link
-                link * myLink = dynamic_cast<link*>(tempItem->childItems().first());
-                myLinkDialog *linkDialog = new myLinkDialog(myLink);
-                linkDialog->exec();
+
+                //find out why need to go through "parent item"
+
+
+                qDebug()<<tempItem<<tempItem->parentItem();
+                if(tempItem->parentItem()->zValue()==3){
+                    link * myLink = dynamic_cast<link*>(tempItem->parentItem());
+                    myLinkDialog *linkDialog = new myLinkDialog(myLink);
+                    linkDialog->exec();
+                }
             }
 
         }
@@ -207,9 +213,12 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                     else{//link two selected components
                         link* myLink = new link(comp,tempComp);
                         this->addItem(myLink);
-                        qDebug()<<"evoke link dialog";
+                        myLink->setZValue(3);
+
                         myLinkDialog * linkDialog = new myLinkDialog(myLink);
                         linkDialog->exec();
+
+                        qDebug()<<myLink;
 
                         enableDrag(true);
 

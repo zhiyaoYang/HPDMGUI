@@ -30,6 +30,7 @@ private:
     void createStreamGroupBox();
     void createParameterGroupBox();
     void createIterationGroupBox();
+    void createButtonGroupBox();
 
     void initialize();
     void readData();
@@ -37,6 +38,7 @@ private:
     QGroupBox *streamGroupBox;
     QGroupBox *parameterGroupBox;
     QGroupBox *iterationGroupBox;
+    QGroupBox *buttonGroupBox;
 
     QLabel *streamLabel1;
     QLabel *streamLabel2;
@@ -66,6 +68,10 @@ private:
     QLineEdit *iterationLineEdit2;
     QListWidget *iterationList1;
     QListWidget *iterationList2;
+
+    QPushButton *doneButton;
+    QPushButton *resetButton;
+    QPushButton *cancelButton;
 
     link * myLink;
 };
