@@ -19,6 +19,7 @@
 #include <QContextMenuEvent>
 #include <QApplication>
 #include <QGraphicsItem>
+#include <QMessageBox>
 
 
 component * dummy;
@@ -91,9 +92,26 @@ void myMainwindow::newComponent()
 
 void myMainwindow::newLink()
 {
-    QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
-    sceneAction = "makeLink";
-    enableDrag(false);//lock drag of components and texts
+
+    QMessageBox * mb= new QMessageBox("New Link",
+                         "Double click to select a component to create a new link from it.",
+                         QMessageBox::Information,
+                         QMessageBox::Yes,
+                         QMessageBox::Cancel,
+                         QMessageBox::NoButton);
+
+    int ret = mb->exec();
+    if(ret == QMessageBox::Yes){
+
+        QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
+        sceneAction = "makeLink";
+
+    }
+    else{
+        QApplication::restoreOverrideCursor();
+        sceneAction = "";
+    }
+
 }
 
 void myMainwindow::enableDrag(bool compDrag)

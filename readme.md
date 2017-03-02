@@ -5,14 +5,32 @@ The HPDMGUI is the desktop GUI application for the HPDM tool developed by ORNL.
 todo list:
 
 * build mock-up interface with component, link, and property display.
-	* link auto-update
+	* potentially lnk selection problem
 	* link property dialog
-	* potentially lnk selection problem (bounding rect?)
-	* generic way to dynamically assign property parameters to components (based on external list)
+	* generic way to dynamically assign property parameters to components (according to external list)
 	* component parameters into the compDialog
-	* new component drop-and-define
 * file system
 	* load existing .hpdm file
 	* save/load into .xml file
 
-last updated: 1/27/2017
+	
+last updated: 3/2/2017
+
+
+note:
+* what is the dock for?
+	* system pic & system level paramters?
+
+* separate "layout" stage from "parameter setting" stage?
+	* layout: move around
+		* multiple selection?
+			* drag to select
+			* toggle to select
+			* selection state indicator (color/boundary)
+	* parameter setting: no selection/drag/moving
+			* single click --> dock
+				* component/link
+				* blank --> system
+			* double click --> dialog
+
+* use enum for scene status
