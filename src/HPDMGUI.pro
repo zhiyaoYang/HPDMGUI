@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     component.cpp \
     mymainwindow.cpp \
     mycompdialog.cpp \
-    link.cpp
+    link.cpp \
+    mylinkdialog.cpp
 
 HEADERS  += \
     myscene.h \
@@ -26,6 +27,7 @@ HEADERS  += \
     component.h \
     mymainwindow.h \
     mycompdialog.h \
-    link.h
+    link.h \
+    mylinkdialog.h
 
 FORMS    +=

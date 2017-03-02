@@ -13,16 +13,17 @@
 
 
 #include "myscene.h"
-#include <QtGui>
-#include <QGraphicsSceneMouseEvent>
 #include "mymainwindow.h"
-#include <QPen>
-#include <QGraphicsTextItem>
-#include <QObject>
 #include "component.h"
 #include "mycompdialog.h"
 #include "link.h"
+#include "mylinkdialog.h"
 
+#include <QtGui>
+#include <QGraphicsSceneMouseEvent>
+#include <QPen>
+#include <QGraphicsTextItem>
+#include <QObject>
 #include <QGraphicsItem>
 #include <QDebug>
 #include <QDrag>
@@ -92,6 +93,8 @@ void myScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         mousex = event->scenePos().x();
         mousey = event->scenePos().y();
         drawComponent(tempComponent);
+        //evoke component selection dialog
+        //followed by component property dialog
 
         QApplication::restoreOverrideCursor();
 
@@ -117,7 +120,9 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                 compDialog->exec();
             }
             else if(tempItem->zValue()==0){//link
-                qDebug()<<"a link!";
+                link * myLink = dynamic_cast<link*>(tempItem->childItems().first());
+                myLinkDialog *linkDialog = new myLinkDialog(myLink);
+                linkDialog->exec();
             }
 
         }
@@ -162,8 +167,8 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                         link* myLink = new link(comp,selectedComponent.first());
                         this->addItem(myLink);
                         qDebug()<<"evoke link dialog";
-//                        myLinkDialog * linkDialog = new myLinkDialog(myLink);
-//                        linkDialog->exec();
+                        myLinkDialog * linkDialog = new myLinkDialog(myLink);
+                        linkDialog->exec();
 
                         selectedComponent.clear();
                         sceneAction = "";
