@@ -126,7 +126,9 @@ void myMainwindow::help()
 
 void myMainwindow::about()
 {
-
+    QStringList list;
+    list<<"help"<<"test";
+    fillDock(list);
 }
 
 void myMainwindow::initialize()
@@ -217,15 +219,15 @@ void myMainwindow::createMenus()
 
 void myMainwindow::createDockWindows()
 {
-    QDockWidget * dock = new QDockWidget(tr("Component"),this);
-    dock->setAllowedAreas(Qt::RightDockWidgetArea);
-    introduction = new QListWidget(dock);
+    myDock = new QDockWidget(tr("InfoDock"),this);
+    myDock->setAllowedAreas(Qt::RightDockWidgetArea);
+    introduction = new QListWidget(myDock);
     introduction->addItems(QStringList()
                            <<"index"
                            <<"description"
                            <<"properties");
-    dock->setWidget(introduction);
-    addDockWidget(Qt::RightDockWidgetArea,dock);
+    myDock->setWidget(introduction);
+    addDockWidget(Qt::RightDockWidgetArea,myDock);
 }
 
 void myMainwindow::createStatusBar()

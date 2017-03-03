@@ -10,7 +10,7 @@ todo list:
 	* auto populate component parameters into the compDialog
 	* write current case info back into the .hpdm file
 
-*later version
+* later version
 	* sync with external component list & allow adding new component
 
 
@@ -21,6 +21,7 @@ last updated: 3/2/2017
 note:
 * what is the dock for?
 	* system pic & system level paramters?
+	* dock show/hide
 
 * separate "layout" stage from "parameter setting" stage?
 	* layout: move around

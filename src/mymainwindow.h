@@ -24,6 +24,12 @@ protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
 #endif // QT_NO_CONTEXTMENU
 
+    void fillDock(QStringList string){
+        introduction->clear();
+        introduction->addItems(string);
+        myDock->update();
+    }
+
 
 private slots:
     //file menu
@@ -51,6 +57,7 @@ private:
 
     myScene *scene;
     myView *view;
+    QDockWidget* myDock;
 
     QMenu *fileMenu;
     QMenu *editMenu;
