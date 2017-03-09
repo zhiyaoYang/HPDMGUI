@@ -56,6 +56,20 @@ QRectF link::boundingRect() const
     return rect;
 }
 
+QPainterPath link::shape() const
+{
+    QPainterPath path;
+    double width = 2.5, height = 2.5;
+    QPolygon polygon;
+    polygon << QPoint(0, 0);
+    polygon << QPoint(5, 5);
+    polygon << QPoint(width, height);
+    polygon << QPoint(width - 5, height - 5);
+    path.addPolygon(polygon);
+
+    return path;
+}
+
 
 //improve bounding rect:
 //http://stackoverflow.com/questions/26271623/customizing-shape-of-bounding-rect

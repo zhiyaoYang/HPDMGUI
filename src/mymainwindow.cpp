@@ -121,13 +121,15 @@ void myMainwindow::enableDrag(bool compDrag)
 
 void myMainwindow::help()
 {
-
+    QStringList list;
+    list<<"help"<<"test";
+    fillDock(list);
 }
 
 void myMainwindow::about()
 {
     QStringList list;
-    list<<"help"<<"test";
+    list<<"about"<<"test";
     fillDock(list);
 }
 

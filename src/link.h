@@ -29,6 +29,7 @@ private:
     QGraphicsLineItem * line;
 
     QRectF boundingRect() const;
+    QPainterPath shape() const;
     void setLineColor();
 
 };
