@@ -1,6 +1,7 @@
 #include "link.h"
 
 #include <QDebug>
+#include <QStyleOptionGraphicsItem>
 
 link::link(component *fromComp, component *toComp)
 {
@@ -11,7 +12,7 @@ link::link(component *fromComp, component *toComp)
     myComp2->addLink(this);
 
     line = new QGraphicsLineItem(this);
-    line->setFlags(QGraphicsItem::ItemIsSelectable);
+    line->setFlags(QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemClipsToShape);
     this->setZValue(3);
 
     trackComp();
@@ -44,7 +45,14 @@ void link::setLineColor()
 
 void link::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    QPen pen;
+    pen.setColor(Qt::blue);
+    pen.setWidth(3);
+    painter->setPen(pen);
 
+    painter->drawLine(myComp1->getPos(),myComp2->getPos());
+
+    qDebug()<<option->state;
 }
 
 QRectF link::boundingRect() const
@@ -58,6 +66,7 @@ QRectF link::boundingRect() const
 
 QPainterPath link::shape() const
 {
+    //not making a difference
     QPainterPath path;
     double width = 2.5, height = 2.5;
     QPolygon polygon;
@@ -69,7 +78,3 @@ QPainterPath link::shape() const
 
     return path;
 }
-
-
-//improve bounding rect:
-//http://stackoverflow.com/questions/26271623/customizing-shape-of-bounding-rect
