@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMenu>
 #include <QAction>
+#include <QtWidgets>
 
 #include "myscene.h"
 #include "myview.h"
@@ -23,6 +24,12 @@ protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
 #endif // QT_NO_CONTEXTMENU
 
+    void fillDock(QStringList string){
+        introduction->clear();
+        introduction->addItems(string);
+        myDock->update();
+    }
+
 
 private slots:
     //file menu
@@ -34,7 +41,7 @@ private slots:
     //edit menu
     void newComponent();
     void newLink();
-    void enableDrag(bool arg1);
+    void enableDrag(bool compDrag);
 
     //help menu
     void help();
@@ -45,9 +52,12 @@ private:
     void initialize();
     void createActions();
     void createMenus();
+    void createDockWindows();
+    void createStatusBar();
 
     myScene *scene;
     myView *view;
+    QDockWidget* myDock;
 
     QMenu *fileMenu;
     QMenu *editMenu;
@@ -62,6 +72,9 @@ private:
     QAction *enableDragAct;
     QAction *helpAct;
     QAction *aboutAct;
+
+    QListWidget *introduction;
+    QTextEdit *textEdit;
 
 
 };

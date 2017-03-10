@@ -18,6 +18,7 @@
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QApplication>
+#include <QGraphicsItem>
 #include <QMessageBox>
 
 
@@ -91,6 +92,7 @@ void myMainwindow::newComponent()
 
 void myMainwindow::newLink()
 {
+
     QMessageBox * mb= new QMessageBox("New Link",
                          "Double click to select a component to create a new link from it.",
                          QMessageBox::Information,
@@ -112,13 +114,9 @@ void myMainwindow::newLink()
 
 }
 
-void myMainwindow::enableDrag(bool arg1)
+void myMainwindow::enableDrag(bool compDrag)
 {
-    component* iterator = dummy;
-    while(iterator->next!=NULL){
-        iterator = iterator->next;
-        iterator->setMovable(arg1);
-    }
+    scene->enableDrag(compDrag);
 }
 
 void myMainwindow::help()
@@ -128,7 +126,9 @@ void myMainwindow::help()
 
 void myMainwindow::about()
 {
-
+    QStringList list;
+    list<<"help"<<"test";
+    fillDock(list);
 }
 
 void myMainwindow::initialize()
@@ -143,6 +143,8 @@ void myMainwindow::initialize()
 
     createActions();
     createMenus();
+    createDockWindows();
+    createStatusBar();
 
 }
 
@@ -213,4 +215,22 @@ void myMainwindow::createMenus()
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(helpAct);
     helpMenu->addAction(aboutAct);
+}
+
+void myMainwindow::createDockWindows()
+{
+    myDock = new QDockWidget(tr("InfoDock"),this);
+    myDock->setAllowedAreas(Qt::RightDockWidgetArea);
+    introduction = new QListWidget(myDock);
+    introduction->addItems(QStringList()
+                           <<"index"
+                           <<"description"
+                           <<"properties");
+    myDock->setWidget(introduction);
+    addDockWidget(Qt::RightDockWidgetArea,myDock);
+}
+
+void myMainwindow::createStatusBar()
+{
+
 }

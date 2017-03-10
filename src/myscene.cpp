@@ -41,6 +41,7 @@ double mousey;
 extern component* head;
 extern component* dummy;
 extern component* tempComponent;
+extern myMainwindow * theMainWindow;
 
 extern QString sceneAction;
 
@@ -80,6 +81,22 @@ void myScene::drawComponent(component * comp)
 
 }
 
+void myScene::enableDrag(bool compDrag, bool textDrag)
+{
+    component* iterator = dummy;
+    while(iterator->next!=NULL){
+        iterator = iterator->next;
+        iterator->setMovable(compDrag);
+        if(compDrag){
+            iterator->text->setFlags(QGraphicsItem::ItemIsFocusable);
+        }
+        else {
+            iterator->text->setFlags(QGraphicsItem::ItemIsMovable);
+        }
+    }
+
+}
+
 
 void myScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -111,18 +128,24 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     if(!items.isEmpty()){
         QGraphicsItem* tempItem = items.first();
-        qDebug()<<tempItem->zValue()<<tempItem->scenePos()<<tempItem->flags();
+        qDebug()<<tempItem<<tempItem->scenePos()<<tempItem->flags()<<tempItem->childItems().count();
         if(sceneAction == ""){//evoke property dialog
             if(tempItem->zValue()==2){//component
                 component* comp = dynamic_cast<component*>(tempItem->childItems().first());
-                qDebug()<<"linked?"<<!comp->myLinks.isEmpty();
                 myCompDialog * compDialog = new myCompDialog(comp);
                 compDialog->exec();
             }
             else if(tempItem->zValue()==0){//link
-                link * myLink = dynamic_cast<link*>(tempItem->childItems().first());
-                myLinkDialog *linkDialog = new myLinkDialog(myLink);
-                linkDialog->exec();
+
+                //find out why need to go through "parent item"
+
+
+                qDebug()<<tempItem<<tempItem->parentItem();
+                if(tempItem->parentItem()->zValue()==3){
+                    link * myLink = dynamic_cast<link*>(tempItem->parentItem());
+                    myLinkDialog *linkDialog = new myLinkDialog(myLink);
+                    linkDialog->exec();
+                }
             }
 
         }
@@ -148,7 +171,15 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                     }
                 }
                 else if(selectedComponent.count()==1){//second component
-                    if(comp==selectedComponent.first()){//selected the same component
+
+                    component* tempComp = selectedComponent.first();
+                    QSet<component*> linkedComps;
+                    foreach(link* myLink, comp->myLinks){
+                        linkedComps.insert(myLink->getComp1());
+                        linkedComps.insert(myLink->getComp2());
+                    }
+
+                    if(comp==tempComp){//selected the same component
                         mb = new QMessageBox("Making Links",
                                              "Please select two different components to link.\nDo you want to select another component?",
                                              QMessageBox::Warning,
@@ -163,13 +194,39 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                             sceneAction = "";
                         }
                     }
+                    else if(linkedComps.contains(tempComp)){//existing link between the two components
+
+                        mb = new QMessageBox("Making Links",
+                                             "There is already a link between the selected components.\nDo you want to select another component?",
+                                             QMessageBox::Warning,
+                                             QMessageBox::Yes,
+                                             QMessageBox::Cancel,
+                                             QMessageBox::NoButton);
+                        if(mb->exec()== QMessageBox::Yes){
+                            QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
+                        }
+                        else{
+                            selectedComponent.clear();
+                            sceneAction = "";
+                        }
+                    }
                     else{//link two selected components
-                        link* myLink = new link(comp,selectedComponent.first());
+                        link* myLink = new link(comp,tempComp);
                         this->addItem(myLink);
-                        qDebug()<<"evoke link dialog";
+                        myLink->setZValue(3);
+
                         myLinkDialog * linkDialog = new myLinkDialog(myLink);
                         linkDialog->exec();
 
+                        qDebug()<<myLink;
+
+                        enableDrag(true);
+
+                        QApplication::restoreOverrideCursor();
+
+
+//http://stackoverflow.com/questions/8187807/itemchanged-never-called-on-qgraphicsitem
+//http://doc.qt.io/qt-5/qtwidgets-graphicsview-dragdroprobot-example.html
                         selectedComponent.clear();
                         sceneAction = "";
                     }

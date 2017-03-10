@@ -32,7 +32,10 @@ void myLinkDialog::doneClicked()
 void myLinkDialog::resetClicked()
 {
     //todo: overwrite text edits with data from system (same as when opening dialog)
-    readData();
+//    readData();
+
+    qDebug()<<myLink->getComp1();
+    qDebug()<<myLink->getComp2();
 }
 
 void myLinkDialog::createStreamGroupBox()
@@ -64,13 +67,13 @@ void myLinkDialog::createStreamGroupBox()
 
 
     layout->addWidget(streamLabel1,0,0);
-    layout->addWidget(streamLabel2,1,0);
-    layout->addWidget(streamComboBox1,0,1);
+    layout->addWidget(streamLabel2,0,1);
+    layout->addWidget(streamComboBox1,1,0);
     layout->addWidget(streamComboBox2,1,1);
 //    layout->addWidget(streamList1,0,2);
 //    layout->addWidget(streamList2,1,2);
-    layout->addWidget(streamLineEdit1,0,3);
-    layout->addWidget(streamLineEdit2,1,3);
+    layout->addWidget(streamLineEdit1,3,0);
+    layout->addWidget(streamLineEdit2,3,1);
 
     streamGroupBox->setLayout(layout);
 
@@ -105,13 +108,13 @@ void myLinkDialog::createParameterGroupBox()
 
 
     layout->addWidget(parameterLabel1,0,0);
-    layout->addWidget(parameterLabel2,1,0);
-    layout->addWidget(parameterComboBox1,0,1);
+    layout->addWidget(parameterLabel2,0,1);
+    layout->addWidget(parameterComboBox1,1,0);
     layout->addWidget(parameterComboBox2,1,1);
 //    layout->addWidget(parameterList1,0,2);
 //    layout->addWidget(parameterList2,1,2);
-    layout->addWidget(parameterLineEdit1,0,3);
-    layout->addWidget(parameterLineEdit2,1,3);
+    layout->addWidget(parameterLineEdit1,3,0);
+    layout->addWidget(parameterLineEdit2,3,1);
 
     parameterGroupBox->setLayout(layout);
 
@@ -146,16 +149,37 @@ void myLinkDialog::createIterationGroupBox()
 
 
     layout->addWidget(iterationLabel1,0,0);
-    layout->addWidget(iterationLabel2,1,0);
-    layout->addWidget(iterationComboBox1,0,1);
+    layout->addWidget(iterationLabel2,0,1);
+    layout->addWidget(iterationComboBox1,1,0);
     layout->addWidget(iterationComboBox2,1,1);
 //    layout->addWidget(iterationList1,0,2);
 //    layout->addWidget(iterationList2,1,2);
-    layout->addWidget(iterationLineEdit1,0,3);
-    layout->addWidget(iterationLineEdit2,1,3);
+    layout->addWidget(iterationLineEdit1,3,0);
+    layout->addWidget(iterationLineEdit2,3,1);
 
     iterationGroupBox->setLayout(layout);
 
+}
+
+void myLinkDialog::createButtonGroupBox()
+{
+    buttonGroupBox = new QGroupBox;
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    doneButton = new QPushButton(tr("Done"));
+    resetButton = new QPushButton(tr("Reset"));
+    cancelButton = new QPushButton(tr("Cancel"));
+
+    QSpacerItem *sItem = new QSpacerItem(0,0,QSizePolicy::Minimum,QSizePolicy::Expanding);
+    layout->addItem(sItem);
+    layout->addWidget(doneButton);
+    layout->addWidget(resetButton);
+    layout->addWidget(cancelButton);
+    buttonGroupBox->setLayout(layout);
+
+    connect(doneButton,SIGNAL(clicked(bool)),this,SLOT(doneClicked()));
+    connect(resetButton,SIGNAL(clicked(bool)),this,SLOT(resetClicked()));
+    connect(cancelButton,SIGNAL(clicked(bool)),this,SLOT(reject()));
 }
 
 void myLinkDialog::initialize()
@@ -163,18 +187,19 @@ void myLinkDialog::initialize()
     createStreamGroupBox();
     createParameterGroupBox();
     createIterationGroupBox();
+    createButtonGroupBox();
 
     QVBoxLayout * mainLayout = new QVBoxLayout;
     mainLayout->addWidget(streamGroupBox);
     mainLayout->addWidget(parameterGroupBox);
     mainLayout->addWidget(iterationGroupBox);
+    mainLayout->addWidget(buttonGroupBox);
     setLayout(mainLayout);
 
     setWindowFlags(Qt::Tool);
     setWindowModality(Qt::ApplicationModal);
     setWindowTitle(tr("Link Settings"));
 
-    qDebug()<<"layout set";
 
     readData();
 

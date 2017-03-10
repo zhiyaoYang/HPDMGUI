@@ -12,7 +12,7 @@ link::link(component *fromComp, component *toComp)
 
     line = new QGraphicsLineItem(this);
     line->setFlags(QGraphicsItem::ItemIsSelectable);
-    this->setZValue(10);
+    this->setZValue(3);
 
     trackComp();
 }
@@ -25,9 +25,7 @@ void link::trackComp()
 
     line->setLine(QLineF(myComp2->scenePos(),myComp1->scenePos()));
 
-    qDebug()<<"tracking comp"<<myComp2->scenePos()<<myComp1->scenePos();
-
-
+//later for stream direction
 //    myArrow->setPos((myFromNode->scenePos().x()+myToNode->scenePos().x())/2,(myFromNode->scenePos().y()+myToNode->scenePos().y())/2);
 //    if(dX>=0)
 //        myArrow->setRotation(-180*acos(dY/sqrt(dX*dX+dY*dY))/3.14);
@@ -49,7 +47,7 @@ void link::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
 }
 
-QRectF link::boundingRect() const//ma
+QRectF link::boundingRect() const
 {
     QRectF rect;
     rect.setTopLeft(myComp1->getPos());
@@ -57,3 +55,7 @@ QRectF link::boundingRect() const//ma
 
     return rect;
 }
+
+
+//improve bounding rect:
+//http://stackoverflow.com/questions/26271623/customizing-shape-of-bounding-rect

@@ -11,6 +11,8 @@ component::component()
     text = new QGraphicsSimpleTextItem(this);
     next = NULL;
 
+    this->setFlags(QGraphicsItem::ItemSendsScenePositionChanges);
+
     this->setZValue(2);
 }
 
@@ -64,7 +66,7 @@ void component::draw()
     rectangle->setPen(blackpen);
 
     text->moveBy(-20,18);
-    text->setFlags(QGraphicsItem::ItemIsMovable);
+    text->setFlags(QGraphicsItem::ItemIsFocusable);
     //todo: restrict the area where this text item can be moved
     text->setParentItem(this);
 
@@ -78,7 +80,8 @@ void component::setMovable(bool movable)
                                      |QGraphicsItem::ItemSendsScenePositionChanges);
     }
     else{
-        this->parentItem()->setFlags(QGraphicsItem::ItemIsSelectable);
+        this->parentItem()->setFlags(QGraphicsItem::ItemIsSelectable
+                                     |QGraphicsItem::ItemSendsScenePositionChanges);
 
     }
 }
@@ -98,9 +101,7 @@ QRectF component::boundingRect() const
 
 QVariant component::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    qDebug()<<change;
-    if(/*change == ItemScenePositionHasChanged*/change == ItemPositionChange && scene()){
-        qDebug()<<"pos change";
+    if(change == ItemScenePositionHasChanged){
         if(!myLinks.isEmpty()){
             foreach(link* myLink,myLinks){
                 myLink->trackComp();

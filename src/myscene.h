@@ -29,6 +29,7 @@ public:
 public slots:
 
     void drawComponent(component * comp);
+    void enableDrag(bool compDrag, bool textDrag = false);
 
 
 protected:
