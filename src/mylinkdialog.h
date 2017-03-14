@@ -10,6 +10,9 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QTableWidget>
+#include <QTabWidget>
+#include <QSpinBox>
 #include <QListWidget>
 
 
@@ -24,54 +27,71 @@ public:
 private slots:
     void doneClicked();
     void resetClicked();
+    void streamDirectionFlipped();
+    void iterationDirectionFlipped();
 
 private:
 
     void createStreamGroupBox();
-    void createParameterGroupBox();
+    void createVariableGroupBox();
     void createIterationGroupBox();
     void createButtonGroupBox();
 
     void initialize();
     void readData();
 
+    QTabWidget *tabWidget;
+
     QGroupBox *streamGroupBox;
-    QGroupBox *parameterGroupBox;
+    QGroupBox *variableGroupBox;
     QGroupBox *iterationGroupBox;
     QGroupBox *buttonGroupBox;
 
-    QLabel *streamLabel1;
-    QLabel *streamLabel2;
-    QComboBox *streamComboBox1;
-    QComboBox *streamComboBox2;
-    QLineEdit *streamLineEdit1;
-    QLineEdit *streamLineEdit2;
-    QListWidget *streamList1;
-    QListWidget *streamList2;
+    QLabel *streamCompLabel1;
+    QLabel *streamCompLabel2;
+    QPushButton *streamDirectionButton;
+    QComboBox *streamSubstanceCombobox;
+    QLabel *streamIOLabel1;
+    QLabel *streamIOLabel2;
+    QSpinBox *streamIOSpinBox1;
+    QSpinBox *streamIOSpinBox2;
+    QTableWidget *streamTable;
+    QPushButton * streamAddButton;
+    QPushButton * streamRemoveButton;
+    QPushButton * streamReverseButton;
+
+    QLabel *variableCompLabel1;
+    QLabel *variableCompLabel2;
+    QComboBox *variableVPCombobox1;
+    QComboBox *variableVPCombobox2;
+    QComboBox *variableMemberCombobox1;
+    QComboBox *variableMemberCombobox2;
+    QTableWidget *variableTable;
+    QPushButton * variableAddButton;
+    QPushButton * variableRemoveButton;
 
 
-    QLabel *parameterLabel1;
-    QLabel *parameterLabel2;
-    QComboBox *parameterComboBox1;
-    QComboBox *parameterComboBox2;
-    QLineEdit *parameterLineEdit1;
-    QLineEdit *parameterLineEdit2;
-    QListWidget *parameterList1;
-    QListWidget *parameterList2;
-
-
-    QLabel *iterationLabel1;
-    QLabel *iterationLabel2;
-    QComboBox *iterationComboBox1;
-    QComboBox *iterationComboBox2;
-    QLineEdit *iterationLineEdit1;
-    QLineEdit *iterationLineEdit2;
-    QListWidget *iterationList1;
-    QListWidget *iterationList2;
+    QLabel *iterationCompLabel1;
+    QLabel *iterationCompLabel2;
+    QPushButton *iterationDirectionButton;
+    QComboBox *iterationVPCombobox1;
+    QComboBox *iterationVPCombobox2;
+    QComboBox *iterationMemberCombobox1;
+    QComboBox *iterationMemberCombobox2;
+    QTableWidget *iterationTable;
+    QPushButton * iterationAddButton;
+    QPushButton * iterationRemoveButton;
+    QPushButton * iterationReverseButton;
 
     QPushButton *doneButton;
     QPushButton *resetButton;
     QPushButton *cancelButton;
+
+    component * myComp1;
+    component * myComp2;
+
+    bool streamRightDirection;
+    bool iterationRightDirection;
 
     link * myLink;
 };
