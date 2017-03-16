@@ -10,6 +10,10 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QComboBox>
+#include <QTabWidget>
+#include <QTableWidget>
+
 
 class myCompDialog : public QDialog
 {
@@ -33,6 +37,8 @@ private:
 
     void initialize();
     void readData();
+
+    QTabWidget *tabWidget;
 
     QGroupBox *infoGroupBox;
     QGroupBox *propertyGroupBox;
