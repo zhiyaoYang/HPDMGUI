@@ -42,7 +42,7 @@ void myCompDialog::createInfoGroupBox()
 
 }
 
-void myCompDialog::createPropertyGroupBox()
+void myCompDialog::createParameterGroupBox()
 {
     propertyGroupBox = new QGroupBox(tr("Properties"));
 
@@ -60,6 +60,11 @@ void myCompDialog::createPropertyGroupBox()
 
 
     propertyGroupBox->setLayout(layout);
+
+}
+
+void myCompDialog::createVariableGroupBox()
+{
 
 }
 
@@ -100,6 +105,7 @@ void myCompDialog::resetClicked()
 
 void myCompDialog::initialize()
 {
+    readData();
 
     createInfoGroupBox();
     createPropertyGroupBox();
@@ -115,7 +121,6 @@ void myCompDialog::initialize()
     setWindowModality(Qt::ApplicationModal);
     setWindowTitle(tr("Component Settings"));
 
-    readData();
 }
 
 void myCompDialog::readData()

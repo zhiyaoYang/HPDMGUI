@@ -31,7 +31,8 @@ private slots:
 private:
 
     void createInfoGroupBox();
-    void createPropertyGroupBox();
+    void createParameterGroupBox();
+    void createVariableGroupBox();
     void createButtonGroupBox();
 
 
@@ -41,18 +42,19 @@ private:
     QTabWidget *tabWidget;
 
     QGroupBox *infoGroupBox;
-    QGroupBox *propertyGroupBox;
+    QGroupBox *parameterGroupBox;
+    QGroupBox *variableGroupBox;
     QGroupBox *buttonGroupBox;
 
-    QLabel * indexLabel;
-    QLabel * nameLabel;
-    QLineEdit * nameEdit;
-    QLabel * descriptionLabel;
-    QTextEdit * descriptionEdit;
+    QLabel * infoIndexLabel;
+    QLabel * infoNameLabel;
+    QLineEdit * infoNameLineEdit;
+    QLabel * infoDescriptionLabel;
+    QTextEdit * infoDescriptionLineEdit;
     QLabel * picLabel;
 
-    QLabel * parameterLabel;
-    QLabel * variableLabel;
+    QTableWidget * parameterTable;
+    QTableWidget * variableTable;
 
     QPushButton *doneButton;
     QPushButton *resetButton;
