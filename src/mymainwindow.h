@@ -27,7 +27,7 @@ protected:
     void fillDock(QStringList string){
         introduction->clear();
         introduction->addItems(string);
-        myDock->update();
+        compListDock->update();
     }
 
 
@@ -57,7 +57,8 @@ private:
 
     myScene *scene;
     myView *view;
-    QDockWidget* myDock;
+    QDockWidget* sysPicDock;
+    QDockWidget* compListDock;
 
     QMenu *fileMenu;
     QMenu *editMenu;
@@ -73,8 +74,8 @@ private:
     QAction *helpAct;
     QAction *aboutAct;
 
+    QLabel *sysPic;
     QListWidget *introduction;
-    QTextEdit *textEdit;
 
 
 };

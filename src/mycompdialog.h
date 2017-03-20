@@ -7,7 +7,6 @@
 #include <QDialog>
 #include <QGroupBox>
 #include <QLabel>
-#include <QTextEdit>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
@@ -26,7 +25,9 @@ public:
 private slots:
 
     void doneClicked();
-    void resetClicked();
+    void variableResetClicked();
+    void parameterResetClicked();
+    void variableHideToggled();
 
 private:
 
@@ -50,15 +51,19 @@ private:
     QLabel * infoNameLabel;
     QLineEdit * infoNameLineEdit;
     QLabel * infoDescriptionLabel;
-    QTextEdit * infoDescriptionLineEdit;
-    QLabel * picLabel;
+    QLineEdit * infoDescriptionLineEdit;
+    QLabel * infoPicLabel;
 
     QTableWidget * parameterTable;
+    QPushButton *parameterResetButton;
     QTableWidget * variableTable;
+    QPushButton *variableResetButton;
+    QPushButton *variableHideButton;
 
     QPushButton *doneButton;
-    QPushButton *resetButton;
     QPushButton *cancelButton;
+
+    bool variableEmptyHidden;
 
     component * myComponent;
 

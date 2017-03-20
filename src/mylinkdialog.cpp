@@ -12,6 +12,8 @@
 myLinkDialog::myLinkDialog(link *mlink)
 {
     myLink = mlink;
+    myComp1 = myLink->getComp1();
+    myComp2 = myLink->getComp2();
 
     initialize();
 }
@@ -256,7 +258,6 @@ void myLinkDialog::initialize()
     streamRightDirection = true;
     iterationRightDirection = true;
 
-    readData();
 
     tabWidget = new QTabWidget;
     createStreamGroupBox();
@@ -279,6 +280,7 @@ void myLinkDialog::initialize()
     setWindowModality(Qt::ApplicationModal);
     setWindowTitle(tr("Link Settings"));
 
+    readData();
 
 
 }
@@ -289,8 +291,6 @@ void myLinkDialog::readData()
 
     qDebug()<<"data read";
 
-    myComp1 = myLink->getComp1();
-    myComp2 = myLink->getComp2();
 
 }
 

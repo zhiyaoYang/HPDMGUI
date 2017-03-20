@@ -221,15 +221,29 @@ void myMainwindow::createMenus()
 
 void myMainwindow::createDockWindows()
 {
-    myDock = new QDockWidget(tr("InfoDock"),this);
-    myDock->setAllowedAreas(Qt::RightDockWidgetArea);
-    introduction = new QListWidget(myDock);
+    sysPicDock = new QDockWidget(tr("System Diagram"),this);
+    sysPicDock->setAllowedAreas(Qt::RightDockWidgetArea);
+
+    QPixmap pic("System.png");
+    pic = pic.scaled(500,500,Qt::KeepAspectRatio);
+    sysPic = new QLabel(sysPicDock);
+    sysPic->setPixmap(pic);
+    sysPicDock->setWidget(sysPic);
+    addDockWidget(Qt::RightDockWidgetArea,sysPicDock);
+
+
+    compListDock = new QDockWidget(tr("Component List"),this);
+    compListDock->setAllowedAreas(Qt::RightDockWidgetArea);
+    introduction = new QListWidget(compListDock);
     introduction->addItems(QStringList()
                            <<"index"
                            <<"description"
                            <<"properties");
-    myDock->setWidget(introduction);
-    addDockWidget(Qt::RightDockWidgetArea,myDock);
+    compListDock->setWidget(introduction);
+    addDockWidget(Qt::RightDockWidgetArea,compListDock);
+
+    addDockWidget(Qt::RightDockWidgetArea,sysPicDock);
+    addDockWidget(Qt::RightDockWidgetArea,compListDock);
 }
 
 void myMainwindow::createStatusBar()
