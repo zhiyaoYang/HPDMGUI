@@ -35,6 +35,7 @@ private slots:
     //file menu
     void newFile();
     void open();
+    bool openHPDM();
     void save();
     void exitProgram();
 
@@ -54,6 +55,8 @@ private:
     void createMenus();
     void createDockWindows();
     void createStatusBar();
+    bool loadHPDMFile(QString name);
+    void reportError(QString err);
 
     myScene *scene;
     myView *view;
@@ -66,6 +69,7 @@ private:
 
     QAction *newAct;
     QAction *openAct;
+    QAction *openHPDMAct;
     QAction *saveAct;
     QAction *exitAct;
     QAction *newCompAct;

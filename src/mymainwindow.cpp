@@ -72,6 +72,17 @@ void myMainwindow::open()
 
 }
 
+bool myMainwindow::openHPDM()
+{
+    QString name = QFileDialog::getOpenFileName(this,"Open a .hpdm file","./","HPDM files(*.hpdm)");
+    if(name!=""){
+        return loadHPDMFile(name);
+    }
+    else{
+        return false;
+    }
+}
+
 void myMainwindow::save()
 {
 
@@ -162,6 +173,11 @@ void myMainwindow::createActions()
     openAct->setStatusTip(tr("Open an existing case"));
     connect(openAct,&QAction::triggered,this,&myMainwindow::open);
 
+    openHPDM = new QAction(tr("&Load .hpdm File"),this);
+//    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
+    openHPDM->setStatusTip(tr("Load a .hpdm file"));
+    connect(openHPDM,&QAction::triggered,this,&myMainwindow::openHPDM);
+
     saveAct = new QAction(tr("&Save"),this);
     saveAct->setShortcuts(QKeySequence::Save);//crl+S
     saveAct->setStatusTip(tr("Save current case"));
@@ -249,4 +265,31 @@ void myMainwindow::createDockWindows()
 void myMainwindow::createStatusBar()
 {
 
+}
+
+bool myMainwindow::loadHPDMFile(QString name)
+{
+    setWindowTitle("HPDM-"+name);
+    QFile ofile(name);
+    if(!ofile.open(QIODevice::ReadOnly|QIODevice::Text)){
+        reportError("Failed to open .hpdm file.");
+        return false;
+    }
+    else{
+        QTextStream stream(&ofile);
+        QString line;
+        QStringList comp;
+        QStringList links;
+        QStringList splitList;
+
+
+    }
+}
+
+void myMainwindow::reportError(QString err)
+{
+    QMessageBox *eBox = new QMessageBox;
+    eBox->setIcon(QMessageBox::Warning);
+    eBox->setText(err);
+    eBox->exec();
 }
