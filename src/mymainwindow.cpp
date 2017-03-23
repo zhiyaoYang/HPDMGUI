@@ -173,10 +173,10 @@ void myMainwindow::createActions()
     openAct->setStatusTip(tr("Open an existing case"));
     connect(openAct,&QAction::triggered,this,&myMainwindow::open);
 
-    openHPDM = new QAction(tr("&Load .hpdm File"),this);
+    openHPDMAct = new QAction(tr("&Load .hpdm File"),this);
 //    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
-    openHPDM->setStatusTip(tr("Load a .hpdm file"));
-    connect(openHPDM,&QAction::triggered,this,&myMainwindow::openHPDM);
+    openHPDMAct->setStatusTip(tr("Load a .hpdm file"));
+    connect(openHPDMAct,&QAction::triggered,this,&myMainwindow::openHPDM);
 
     saveAct = new QAction(tr("&Save"),this);
     saveAct->setShortcuts(QKeySequence::Save);//crl+S
@@ -220,6 +220,7 @@ void myMainwindow::createMenus()
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(newAct);
     fileMenu->addAction(openAct);
+    fileMenu->addAction(openHPDMAct);
     fileMenu->addAction(saveAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
@@ -278,12 +279,97 @@ bool myMainwindow::loadHPDMFile(QString name)
     else{
         QTextStream stream(&ofile);
         QString line;
+        QString tempStr;
         QStringList comp;
         QStringList links;
         QStringList splitList;
+        component * loadComp;
+
+        line = stream.readLine();
+        while(!line.contains("End of Components")){
+
+            qDebug()<<line.at(0);
+
+            if(QString(line.at(0))== "C"){
+                //add a new component
+                loadComp = new component;
+
+                comp = line.split("\t",QString::SkipEmptyParts);
+
+                qDebug()<<"in comp"<<comp.at(1);
+
+                if(comp.at(2).toInt()>0){
+                    //real component
+                    loadComp->setIndex(comp.at(1).toInt());//index
+                    loadComp->setTypeIndex(comp.at(2).toInt());//type index
+                    loadComp->setCompName(comp.at(6));//name
+                    tempStr = comp.at(7);
+                    loadComp->setCompDescription(tempStr.replace("\"",""));//description (get rid of " ")
+
+                    line = stream.readLine();
+                    while(QString(line.at(0))=="P"||QString(line.at(0))=="V"){
+                        //insert variable/parameters into component
+                        if(QString(line.at(0))=="P"){
+                            parameter p;
+                            splitList = line.split("\t",QString::SkipEmptyParts);
+                            p.index = splitList.at(1).toInt();
+                            p.iORd = splitList.at(2);
+                            p.name = splitList.at(3);
+                            p.value = splitList.at(5).toDouble();
+                            tempStr = splitList.at(7);
+                            p.description = tempStr.replace("\"","");
+
+                            loadComp->myPar.append(p);
+
+                            qDebug()<<"add a parameter";
+                        }
+                        else{
+                            variable v;
+                            splitList = line.split("\t",QString::SkipEmptyParts);
+                            v.index = splitList.at(1).toInt();
+                            v.solvingSetting = splitList.at(2);
+                            v.name = splitList.at(3);
+                            v.enabled = splitList.at(5);
+                            if(v.solvingSetting=="r"){
+                                v.value = 0;
+                                tempStr = splitList.at(7);
+                                v.description = tempStr.replace("\"","");
+                            }
+                            else{
+                                v.value = splitList.at(6).toDouble();
+                                tempStr = splitList.at(8);
+                                v.description = tempStr.replace("\"","");
+                            }
+
+                            loadComp->myVar.append(v);
+
+                            qDebug()<<"add a variable";
+
+                        }
+                        line = stream.readLine();
+                    }
+
+                }
+                else{
+                    qDebug()<<"in equation components";
+                    //solver or equation component
+                    //put into equationLines
 
 
+                    line = stream.readLine();
+                }
+            }
+
+            if(QString(line.at(0))=="!"){
+                line = stream.readLine();
+            }
+        }
+
+
+        stream.flush();
+        ofile.close();
     }
+    return true;
 }
 
 void myMainwindow::reportError(QString err)

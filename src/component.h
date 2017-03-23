@@ -8,13 +8,31 @@
 
 #include "link.h"
 
+using namespace std;
+
 class link;
+
+struct parameter{
+    int index;
+    QString name;
+    double value;
+    QString description;
+    QString iORd;
+};
+
+struct variable{
+    int index;
+    QString name;
+    double value;
+    QString description;
+    QString solvingSetting;
+    QString enabled;
+};
 
 class component : public QGraphicsItem
 {
 public:
     component();
-
 
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -24,7 +42,9 @@ public:
     void addLink(link* mLink){myLinks.insert(mLink);}
     void removeLink(link* mLink){myLinks.remove(mLink);}
     void setIndex(int i){index = i;}
-    int getIndex(){return index;}
+    int getIndex(){return typeIndex;}
+    void setTypeIndex(int i){typeIndex = i;}
+    int getTypeIndex(){return index;}
     void setCompName(QString name){componentName = name;}
     QString getCompName(){return componentName;}
     void setCompDescription(QString des){description = des;}
@@ -33,6 +53,9 @@ public:
     component* next;
     QGraphicsSimpleTextItem * text;
     QSet<link *> myLinks;
+
+    QList<parameter> myPar;
+    QList<variable> myVar;
 
 public slots:
 
@@ -47,6 +70,7 @@ private:
 
 
     int index;
+    int typeIndex;
     QString componentName;
     QString description;
 

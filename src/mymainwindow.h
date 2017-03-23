@@ -81,6 +81,8 @@ private:
     QLabel *sysPic;
     QListWidget *introduction;
 
+    QStringList equationLines;
+
 
 };
 

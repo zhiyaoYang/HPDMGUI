@@ -38,6 +38,8 @@ void component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 QPointF component::getPos()
 {
     return this->scenePos();
+
+
 }
 
 
