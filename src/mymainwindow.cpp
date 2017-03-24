@@ -363,7 +363,7 @@ bool myMainwindow::loadHPDMFile(QString name)
                 }
 
                 //add component into the system
-                if(loadComp->getTypeIndex()>0){
+                if(true/*loadComp->getTypeIndex()>0*/){
                     scene->drawComponent(loadComp,70*loadComp->getIndex(),0);
 //                    qDebug()<<"adding component"<<loadComp->getIndex();
                 }
@@ -471,7 +471,7 @@ bool myMainwindow::loadHPDMFile(QString name)
                 tempSuc.toType = type2;
                 tempSuc.fromNum = num1;
                 tempSuc.toNum = num2;
-                tempSuc.description = QString(splitList.at(4))+" "+QString(splitList.at(5));
+                tempSuc.description = QString(splitList.at(4));
 
                 loadLink->mySuccessive.append(tempSuc);
 
