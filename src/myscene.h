@@ -24,6 +24,7 @@ class myScene :public  QGraphicsScene
 public:
     myScene();
     void drawComponent(component * comp, double x, double y);
+    link* addLink(component* comp1, component* comp2);
     void enableDrag(bool compDrag, bool textDrag = false);
 
 public slots:

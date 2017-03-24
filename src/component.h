@@ -52,6 +52,14 @@ public:
     void setCompDescription(QString des){description = des;}
     QString getCompDescription(){return description;}
 
+    variable findVar(int i){
+        foreach(variable v, myVar){
+            if(v.index==i){
+                return v;
+            }
+        }
+    }
+
     component* next;
     QGraphicsSimpleTextItem * text;
     QSet<link *> myLinks;

@@ -20,7 +20,7 @@
 #include <QApplication>
 #include <QGraphicsItem>
 #include <QMessageBox>
-
+#include <QString>
 
 component * dummy;
 component * head;
@@ -281,9 +281,9 @@ bool myMainwindow::loadHPDMFile(QString name)
         QString line;
         QString tempStr;
         QStringList comp;
-        QStringList links;
         QStringList splitList;
         component * loadComp;
+        link* loadLink;
 
         line = stream.readLine();
         while(!line.contains("End of Components")){
@@ -378,10 +378,107 @@ bool myMainwindow::loadHPDMFile(QString name)
         while(QString(line.at(0))!="L"){
             line = stream.readLine();
         }
-        while(QString(line.at(0))=="L"){
+        while(QString(line.at(0))=="L"||QString(line.at(0))=="T"){
             //add links
             splitList = line.split("\t",QString::SkipEmptyParts);
-            qDebug()<<"adding link"<<splitList;
+
+            if(QString(line.at(0))=="L"){
+                //stream or var connection
+                int compNum1 = splitList.at(2).split(";").at(0).toInt();
+                int num1 = splitList.at(2).split(";").at(1).toInt();
+                int compNum2 = splitList.at(3).split(";").at(0).toInt();
+                int num2 = splitList.at(3).split(";").at(1).toInt();
+
+                component* comp1 = findComp(compNum1+1);
+                component* comp2 = findComp(compNum2+1);
+
+                //find out existing connections between two components
+                bool connected = false;
+                if(!comp1->myLinks.isEmpty()){
+                    foreach(link* l,comp1->myLinks){
+                        if(comp2==l->getOtherComponent(comp1)){
+                            connected = true;
+                            loadLink = l;
+                        }
+                    }
+                }
+                if(!connected){
+                    loadLink = scene->addLink(comp1,comp2);
+                }
+
+                if(QString(line.at(1))=="V"){
+                    //variable connection
+                    varLink tempVar;
+                    tempVar.fromComp = comp1;
+                    tempVar.toComp = comp2;
+                    tempVar.fromVarNum = num1;
+                    tempVar.toVarNum = num2;
+                    tempVar.description = QString(line.at(5));
+
+                    loadLink->myVar.append(tempVar);
+
+
+                    qDebug()<<"add var"<<tempVar.description;
+                }
+                else{
+                    //stream connection
+                    streamLink tempStream;
+                    tempStream.fromComp = comp1;
+                    tempStream.toComp = comp2;
+                    tempStream.fromPortNum = num1;
+                    tempStream.toPortNum= num2;
+                    tempStream.type = QString(line.at(1));
+                    tempStream.description = QString(line.at(5));
+
+                    loadLink->myStream.append(tempStream);
+
+                    qDebug()<<"add stream"<<tempStream.type;
+
+                }
+
+
+            }
+            else if(QString(line.at(0))=="T"){
+                //successive connection
+                int compNum1 = splitList.at(1).split(";").at(0).toInt();
+                QString type1 = QString(splitList.at(1).split(";").at(1));
+                int num1 = splitList.at(1).split(";").at(2).toInt();
+                int compNum2 = splitList.at(2).split(";").at(0).toInt();
+                QString type2 = QString(splitList.at(2).split(";").at(1));
+                int num2 = splitList.at(2).split(";").at(2).toInt();
+
+                component* comp1 = findComp(compNum1+1);
+                component* comp2 = findComp(compNum2+1);
+
+                //find out existing connections between two components
+                bool connected = false;
+                if(!comp1->myLinks.isEmpty()){
+                    foreach(link* l,comp1->myLinks){
+                        if(comp2==l->getOtherComponent(comp1)){
+                            connected = true;
+                            loadLink = l;
+                        }
+                    }
+                }
+                if(!connected){
+                    loadLink = scene->addLink(comp1,comp2);
+                }
+
+                successiveLink tempSuc;
+                tempSuc.fromComp = comp1;
+                tempSuc.toComp = comp2;
+                tempSuc.fromType = type1;
+                tempSuc.toType = type2;
+                tempSuc.fromNum = num1;
+                tempSuc.toNum = num2;
+                tempSuc.description = QString(splitList.at(4))+" "+QString(splitList.at(5));
+
+                loadLink->mySuccessive.append(tempSuc);
+
+
+                qDebug()<<"add successive"<<tempSuc.description;
+            }
+
             line = stream.readLine();
         }
 
@@ -398,4 +495,17 @@ void myMainwindow::reportError(QString err)
     eBox->setIcon(QMessageBox::Warning);
     eBox->setText(err);
     eBox->exec();
+}
+
+component *myMainwindow::findComp(int i)
+{
+    component* iterator = dummy, * reComp = NULL;
+    while(iterator->next!=NULL){
+        iterator=iterator->next;
+        if(iterator->getIndex()==i){
+            reComp = iterator;
+        }
+    }
+
+    return reComp;
 }

@@ -57,6 +57,7 @@ private:
     void createStatusBar();
     bool loadHPDMFile(QString name);
     void reportError(QString err);
+    component* findComp(int i);
 
     myScene *scene;
     myView *view;

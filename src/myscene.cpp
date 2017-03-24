@@ -78,6 +78,15 @@ void myScene::drawComponent(component * comp,double x, double y)
 
 }
 
+link *myScene::addLink(component *comp1, component *comp2)
+{
+    link* myLink = new link(comp1,comp2);
+    this->addItem(myLink);
+    myLink->setZValue(3);
+
+    return myLink;
+}
+
 void myScene::enableDrag(bool compDrag, bool textDrag)
 {
     component* iterator = dummy;
@@ -208,21 +217,16 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                         }
                     }
                     else{//link two selected components
-                        link* myLink = new link(comp,tempComp);
-                        this->addItem(myLink);
-                        myLink->setZValue(3);
+                        link* myLink = addLink(comp,tempComp);
 
                         myLinkDialog * linkDialog = new myLinkDialog(myLink);
                         linkDialog->exec();
-
-                        qDebug()<<myLink;
 
                         enableDrag(true);
 
                         QApplication::restoreOverrideCursor();
 
 
-//http://stackoverflow.com/questions/8187807/itemchanged-never-called-on-qgraphicsitem
 //http://doc.qt.io/qt-5/qtwidgets-graphicsview-dragdroprobot-example.html
                         selectedComponent.clear();
                         sceneAction = "";
