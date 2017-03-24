@@ -3,8 +3,6 @@
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
 
-extern double mousex;
-extern double mousey;
 
 component::component()
 {
@@ -56,8 +54,12 @@ void component::draw()
     dotpen.setWidth(2.5);
 
 
-
-    qreal x1 = -30, x2 = -30, x3 = +30 ,x4= +30;
+    double width = 30;
+//    if(typeIndex==38){
+//        //fluid line component
+//        width = 15;
+//    }
+    qreal x1 = -width, x2 = -width, x3 = width, x4= width;
     QPointF p1 = QPointF(x1,x2);
     QPointF p2 = QPointF(x3,x4);
     QRectF rect;
@@ -91,7 +93,12 @@ void component::setMovable(bool movable)
 QRectF component::boundingRect() const
 {
 
-    qreal x1 = mousex-35, x2 = mousey-35, x3 = mousex+35 ,x4= mousey+35;
+    double width = 35;
+//    if(typeIndex==38){
+//        //fluid line component
+//        width = 20;
+//    }
+    qreal x1 = -width, x2 = -width, x3 = +width ,x4= +width;
     QPointF p1 = QPointF(x1,x2);
     QPointF p2 = QPointF(x3,x4);
     QRectF rect;

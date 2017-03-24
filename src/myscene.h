@@ -23,13 +23,11 @@ class myScene :public  QGraphicsScene
 {
 public:
     myScene();
-    QGraphicsSimpleTextItem * copcap;
-    QGraphicsRectItem * copRect;
+    void drawComponent(component * comp, double x, double y);
+    void enableDrag(bool compDrag, bool textDrag = false);
 
 public slots:
 
-    void drawComponent(component * comp);
-    void enableDrag(bool compDrag, bool textDrag = false);
 
 
 protected:

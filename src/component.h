@@ -29,6 +29,8 @@ struct variable{
     QString enabled;
 };
 
+
+
 class component : public QGraphicsItem
 {
 public:
@@ -42,9 +44,9 @@ public:
     void addLink(link* mLink){myLinks.insert(mLink);}
     void removeLink(link* mLink){myLinks.remove(mLink);}
     void setIndex(int i){index = i;}
-    int getIndex(){return typeIndex;}
+    int getIndex(){return index;}
     void setTypeIndex(int i){typeIndex = i;}
-    int getTypeIndex(){return index;}
+    int getTypeIndex(){return typeIndex;}
     void setCompName(QString name){componentName = name;}
     QString getCompName(){return componentName;}
     void setCompDescription(QString des){description = des;}
@@ -56,6 +58,8 @@ public:
 
     QList<parameter> myPar;
     QList<variable> myVar;
+
+    QString equation;
 
 public slots:
 

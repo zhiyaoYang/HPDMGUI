@@ -35,9 +35,6 @@
 #include <QApplication>
 
 
-double mousex;
-double mousey;
-
 extern component* head;
 extern component* dummy;
 extern component* tempComponent;
@@ -48,14 +45,17 @@ extern QString sceneAction;
 
 myScene::myScene()
 {
-    mousex = 0;
-    mousey = 0;
 }
 
-void myScene::drawComponent(component * comp)
+void myScene::drawComponent(component * comp,double x, double y)
 {
     QPen pen(Qt::white);
-    rect = this->addRect(mousex-30,mousey-30,+60,+60);
+    double width = 30;
+//    if(comp->getTypeIndex()==38){
+//        //fluid line component
+//        width = 15;
+//    }
+    rect = this->addRect(x-width,y-width,2*width,2*width);
     rect->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
     rect->setPen(pen);
     rect->setZValue(2);
@@ -68,12 +68,9 @@ void myScene::drawComponent(component * comp)
     head->setIndex(tempIndex+1);
 
     head->draw();
-    head->text->setText("<Component"+QString::number(head->getIndex())+">");
-    head->setCompName("test component name");
-    head->setCompDescription("test component description");
+    head->text->setText(head->getCompName());
 
-
-    head->moveBy(mousex,mousey);
+    head->moveBy(x,y);
 
     head->setParentItem(rect);
 
@@ -107,9 +104,9 @@ void myScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //    QList <QGraphicsItem *> items = this->selectedItems();
 
     if(sceneAction == "newComponent"){//for adding components
-        mousex = event->scenePos().x();
-        mousey = event->scenePos().y();
-        drawComponent(tempComponent);
+        double mousex = event->scenePos().x();
+        double mousey = event->scenePos().y();
+        drawComponent(tempComponent,mousex,mousey);
         //evoke component selection dialog
         //followed by component property dialog
 

@@ -96,7 +96,7 @@ void myMainwindow::exitProgram()
 void myMainwindow::newComponent()
 {
     //draw a component
-    tempComponent = new component();
+    tempComponent = new component;
     QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));//later move to component selection dialog
     sceneAction = "newComponent";
 }
@@ -296,73 +296,93 @@ bool myMainwindow::loadHPDMFile(QString name)
 
                 comp = line.split("\t",QString::SkipEmptyParts);
 
-                qDebug()<<"in comp"<<comp.at(1);
 
-                if(comp.at(2).toInt()>0){
-                    //real component
-                    loadComp->setIndex(comp.at(1).toInt());//index
-                    loadComp->setTypeIndex(comp.at(2).toInt());//type index
+                loadComp->setIndex(comp.at(1).toInt());//index
+                loadComp->setTypeIndex(comp.at(2).toInt());//type index
+                if(QString(comp.at(6))=="!"){
+                    //fluid lines/aux components
+                    loadComp->setCompName(comp.at(7));//name
+                    tempStr = comp.at(8);
+                    loadComp->setCompDescription(tempStr.replace("\"",""));//description (get rid of " ")
+                }
+                else{
                     loadComp->setCompName(comp.at(6));//name
                     tempStr = comp.at(7);
                     loadComp->setCompDescription(tempStr.replace("\"",""));//description (get rid of " ")
+                }
 
-                    line = stream.readLine();
-                    while(QString(line.at(0))=="P"||QString(line.at(0))=="V"){
-                        //insert variable/parameters into component
-                        if(QString(line.at(0))=="P"){
-                            parameter p;
-                            splitList = line.split("\t",QString::SkipEmptyParts);
-                            p.index = splitList.at(1).toInt();
-                            p.iORd = splitList.at(2);
-                            p.name = splitList.at(3);
-                            p.value = splitList.at(5).toDouble();
+//                qDebug()<<"in comp"<<comp.at(1)<<loadComp->getIndex()<<loadComp->getTypeIndex();
+
+                line = stream.readLine();
+                while(QString(line.at(0))=="P"||QString(line.at(0))=="V"||QString(line.at(0))=="E"){
+                    //insert variable/parameters into component
+                    if(QString(line.at(0))=="P"){
+                        parameter p;
+                        splitList = line.split("\t",QString::SkipEmptyParts);
+                        p.index = splitList.at(1).toInt();
+                        p.iORd = splitList.at(2);
+                        p.name = splitList.at(3);
+                        p.value = splitList.at(5).toDouble();
+                        tempStr = splitList.at(7);
+                        p.description = tempStr.replace("\"","");
+
+                        loadComp->myPar.append(p);
+
+//                        qDebug()<<"add a parameter"<<p.index;
+                    }
+                    else if(QString(line.at(0))=="V"){
+                        variable v;
+                        splitList = line.split("\t",QString::SkipEmptyParts);
+                        v.index = splitList.at(1).toInt();
+                        v.solvingSetting = splitList.at(2);
+                        v.name = splitList.at(3);
+                        v.enabled = splitList.at(5);
+                        if(v.solvingSetting=="r"||v.solvingSetting=="o"){
+                            v.value = 0;
                             tempStr = splitList.at(7);
-                            p.description = tempStr.replace("\"","");
-
-                            loadComp->myPar.append(p);
-
-                            qDebug()<<"add a parameter";
+                            v.description = tempStr.replace("\"","");
                         }
                         else{
-                            variable v;
-                            splitList = line.split("\t",QString::SkipEmptyParts);
-                            v.index = splitList.at(1).toInt();
-                            v.solvingSetting = splitList.at(2);
-                            v.name = splitList.at(3);
-                            v.enabled = splitList.at(5);
-                            if(v.solvingSetting=="r"){
-                                v.value = 0;
-                                tempStr = splitList.at(7);
-                                v.description = tempStr.replace("\"","");
-                            }
-                            else{
-                                v.value = splitList.at(6).toDouble();
-                                tempStr = splitList.at(8);
-                                v.description = tempStr.replace("\"","");
-                            }
-
-                            loadComp->myVar.append(v);
-
-                            qDebug()<<"add a variable";
-
+                            v.value = splitList.at(6).toDouble();
+                            tempStr = splitList.at(8);
+                            v.description = tempStr.replace("\"","");
                         }
-                        line = stream.readLine();
+
+                        loadComp->myVar.append(v);
+
+//                        qDebug()<<"add a variable"<<v.index;
+
                     }
-
-                }
-                else{
-                    qDebug()<<"in equation components";
-                    //solver or equation component
-                    //put into equationLines
-
-
+                    else if(QString(line.at(0))=="E"){
+                        //later integrate with equation function
+                        loadComp->equation = line;
+//                        qDebug()<<"adding equation";
+                    }
                     line = stream.readLine();
+//                    qDebug()<<"new line starts with"<<line.at(0);
                 }
-            }
 
-            if(QString(line.at(0))=="!"){
+                //add component into the system
+                if(loadComp->getTypeIndex()>0){
+                    scene->drawComponent(loadComp,70*loadComp->getIndex(),0);
+//                    qDebug()<<"adding component"<<loadComp->getIndex();
+                }
+
+            }
+            else if(QString(line.at(0))=="!"){
+                //skip the place-holder rows
                 line = stream.readLine();
             }
+        }
+
+        while(QString(line.at(0))!="L"){
+            line = stream.readLine();
+        }
+        while(QString(line.at(0))=="L"){
+            //add links
+            splitList = line.split("\t",QString::SkipEmptyParts);
+            qDebug()<<"adding link"<<splitList;
+            line = stream.readLine();
         }
 
 
