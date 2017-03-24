@@ -29,6 +29,10 @@ struct variable{
     QString enabled;
 };
 
+struct equation{
+    QString description;
+};
+
 
 
 class component : public QGraphicsItem

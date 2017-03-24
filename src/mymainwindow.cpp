@@ -270,6 +270,9 @@ void myMainwindow::createStatusBar()
 
 bool myMainwindow::loadHPDMFile(QString name)
 {
+
+    //save current?
+    //clear scene
     setWindowTitle("HPDM-"+name);
     QFile ofile(name);
     if(!ofile.open(QIODevice::ReadOnly|QIODevice::Text)){
@@ -287,8 +290,6 @@ bool myMainwindow::loadHPDMFile(QString name)
 
         line = stream.readLine();
         while(!line.contains("End of Components")){
-
-            qDebug()<<line.at(0);
 
             if(QString(line.at(0))== "C"){
                 //add a new component
@@ -311,8 +312,6 @@ bool myMainwindow::loadHPDMFile(QString name)
                     loadComp->setCompDescription(tempStr.replace("\"",""));//description (get rid of " ")
                 }
 
-//                qDebug()<<"in comp"<<comp.at(1)<<loadComp->getIndex()<<loadComp->getTypeIndex();
-
                 line = stream.readLine();
                 while(QString(line.at(0))=="P"||QString(line.at(0))=="V"||QString(line.at(0))=="E"){
                     //insert variable/parameters into component
@@ -327,8 +326,6 @@ bool myMainwindow::loadHPDMFile(QString name)
                         p.description = tempStr.replace("\"","");
 
                         loadComp->myPar.append(p);
-
-//                        qDebug()<<"add a parameter"<<p.index;
                     }
                     else if(QString(line.at(0))=="V"){
                         variable v;
@@ -350,22 +347,18 @@ bool myMainwindow::loadHPDMFile(QString name)
 
                         loadComp->myVar.append(v);
 
-//                        qDebug()<<"add a variable"<<v.index;
-
                     }
                     else if(QString(line.at(0))=="E"){
-                        //later integrate with equation function
+                        //later integrate with equation function?
                         loadComp->equation = line;
-//                        qDebug()<<"adding equation";
                     }
                     line = stream.readLine();
-//                    qDebug()<<"new line starts with"<<line.at(0);
                 }
 
                 //add component into the system
-                if(true/*loadComp->getTypeIndex()>0*/){
-                    scene->drawComponent(loadComp,70*loadComp->getIndex(),0);
-//                    qDebug()<<"adding component"<<loadComp->getIndex();
+                scene->drawComponent(loadComp,70*loadComp->getIndex(),0);
+                if(true){
+                    //loadComp->getTypeIndex()>0 equation components?
                 }
 
             }
@@ -406,19 +399,16 @@ bool myMainwindow::loadHPDMFile(QString name)
                     loadLink = scene->addLink(comp1,comp2);
                 }
 
-                if(QString(line.at(1))=="V"){
+                if(QString(splitList.at(1))=="V"){
                     //variable connection
                     varLink tempVar;
                     tempVar.fromComp = comp1;
                     tempVar.toComp = comp2;
                     tempVar.fromVarNum = num1;
                     tempVar.toVarNum = num2;
-                    tempVar.description = QString(line.at(5));
+                    tempVar.description = QString(splitList.at(5));
 
                     loadLink->myVar.append(tempVar);
-
-
-                    qDebug()<<"add var"<<tempVar.description;
                 }
                 else{
                     //stream connection
@@ -427,16 +417,12 @@ bool myMainwindow::loadHPDMFile(QString name)
                     tempStream.toComp = comp2;
                     tempStream.fromPortNum = num1;
                     tempStream.toPortNum= num2;
-                    tempStream.type = QString(line.at(1));
-                    tempStream.description = QString(line.at(5));
+                    tempStream.type = QString(splitList.at(1));
+                    tempStream.description = QString(splitList.at(5));
 
                     loadLink->myStream.append(tempStream);
 
-                    qDebug()<<"add stream"<<tempStream.type;
-
                 }
-
-
             }
             else if(QString(line.at(0))=="T"){
                 //successive connection
@@ -475,8 +461,6 @@ bool myMainwindow::loadHPDMFile(QString name)
 
                 loadLink->mySuccessive.append(tempSuc);
 
-
-                qDebug()<<"add successive"<<tempSuc.description;
             }
 
             line = stream.readLine();
