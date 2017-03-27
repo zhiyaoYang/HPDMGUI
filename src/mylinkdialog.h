@@ -39,6 +39,9 @@ private:
 
     void initialize();
     void readData();
+    void loadStreamTable();
+    void loadVariableTable();
+    void loadIterationTable();
 
     QTabWidget *tabWidget;
 

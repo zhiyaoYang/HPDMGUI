@@ -135,6 +135,18 @@ void myMainwindow::help()
     QStringList list;
     list<<"help"<<"test";
     fillDock(list);
+
+    component * iterator = dummy;
+    while(iterator->next!=NULL){
+        iterator = iterator->next;
+
+        if(iterator->equation!=""){
+            iterator->parentItem()->hide();
+            foreach(link* l,iterator->myLinks){
+                l->hide();
+            }
+        }
+    }
 }
 
 void myMainwindow::about()
@@ -142,6 +154,18 @@ void myMainwindow::about()
     QStringList list;
     list<<"about"<<"test";
     fillDock(list);
+
+    component * iterator = dummy;
+    while(iterator->next!=NULL){
+        iterator = iterator->next;
+
+        if(iterator->equation!=""){
+            iterator->parentItem()->show();
+            foreach(link* l,iterator->myLinks){
+                l->show();
+            }
+        }
+    }
 }
 
 void myMainwindow::initialize()
@@ -321,7 +345,7 @@ bool myMainwindow::loadHPDMFile(QString name)
                         p.index = splitList.at(1).toInt();
                         p.iORd = splitList.at(2);
                         p.name = splitList.at(3);
-                        p.value = splitList.at(5).toDouble();
+                        p.value = splitList.at(5);
                         tempStr = splitList.at(7);
                         p.description = tempStr.replace("\"","");
 
@@ -335,12 +359,12 @@ bool myMainwindow::loadHPDMFile(QString name)
                         v.name = splitList.at(3);
                         v.enabled = splitList.at(5);
                         if(v.solvingSetting=="r"||v.solvingSetting=="o"){
-                            v.value = 0;
+                            v.value = "";
                             tempStr = splitList.at(7);
                             v.description = tempStr.replace("\"","");
                         }
                         else{
-                            v.value = splitList.at(6).toDouble();
+                            v.value = splitList.at(6);
                             tempStr = splitList.at(8);
                             v.description = tempStr.replace("\"","");
                         }

@@ -15,7 +15,7 @@ class link;
 struct parameter{
     int index;
     QString name;
-    double value;
+    QString value;
     QString description;
     QString iORd;
 };
@@ -23,7 +23,7 @@ struct parameter{
 struct variable{
     int index;
     QString name;
-    double value;
+    QString value;
     QString description;
     QString solvingSetting;
     QString enabled;

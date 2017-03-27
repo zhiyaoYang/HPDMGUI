@@ -138,8 +138,15 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         if(sceneAction == ""){//evoke property dialog
             if(tempItem->zValue()==2){//component
                 component* comp = dynamic_cast<component*>(tempItem->childItems().first());
-                myCompDialog * compDialog = new myCompDialog(comp);
-                compDialog->exec();
+                if(comp->equation==""){
+                    myCompDialog * compDialog = new myCompDialog(comp);
+                    compDialog->exec();
+                }
+                else{
+                    mb = new QMessageBox;
+                    mb->setText("Equation component under construction");
+                    mb->exec();
+                }
             }
             else if(tempItem->zValue()==0){//link
 

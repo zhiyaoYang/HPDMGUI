@@ -39,6 +39,8 @@ private:
 
     void initialize();
     void readData();
+    void loadParameterTable();
+    void loadVariableTable();
 
     QTabWidget *tabWidget;
 

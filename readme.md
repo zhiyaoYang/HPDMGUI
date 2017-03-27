@@ -6,7 +6,10 @@ todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* linkDialog load and change system data
-	* componentDialog load and change system data
+	* componentDialog: load connection component change system data
+	* view control
+	* replace icon with pic
+	* toggle connection display
 	* system level settings (referigerant)
 	* write into .hpdm file
 	* run calculation
