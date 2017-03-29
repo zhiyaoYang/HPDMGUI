@@ -7,7 +7,7 @@ todo list:
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* linkDialog load and change system data
 	* componentDialog: load connection component change system data
-	* view control
+	* view control: zoom and center
 	* replace icon with pic
 	* toggle connection display
 	* system level settings (referigerant)
@@ -24,7 +24,7 @@ todo list:
 
 
 	
-last updated: 3/26/2017
+last updated: 3/27/2017
 
 
 note:
