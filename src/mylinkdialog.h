@@ -65,8 +65,6 @@ private:
 
     QLabel *variableCompLabel1;
     QLabel *variableCompLabel2;
-    QComboBox *variableVPCombobox1;
-    QComboBox *variableVPCombobox2;
     QComboBox *variableMemberCombobox1;
     QComboBox *variableMemberCombobox2;
     QTableWidget *variableTable;

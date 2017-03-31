@@ -126,12 +126,7 @@ void myLinkDialog::createVariableGroupBox()
     variableGroupBox = new QGroupBox;
     variableCompLabel1 = new QLabel(QString::number(myComp1->getIndex())+"-"+myComp1->getCompName());
     variableCompLabel2 = new QLabel(QString::number(myComp2->getIndex())+"-"+myComp2->getCompName());
-    variableVPCombobox1= new QComboBox;
-    variableVPCombobox1->insertItem(0,"Variable");
-    variableVPCombobox1->insertItem(0,"Parameter");
-    variableVPCombobox2= new QComboBox;
-    variableVPCombobox2->insertItem(0,"Variable");
-    variableVPCombobox2->insertItem(0,"Parameter");
+
     variableMemberCombobox1 = new QComboBox;
     variableMemberCombobox2 = new QComboBox;
     variableAddButton = new QPushButton(tr("Add"));
@@ -140,7 +135,7 @@ void myLinkDialog::createVariableGroupBox()
     variableTable = new QTableWidget;
     variableTable->setColumnCount(6);
     QStringList variableHeader;
-    variableHeader<<"Type"<<"Component"<<"Member"<<"Component"<<"Member"<<"Description";
+    variableHeader<<"Component"<<"Member"<<"Component"<<"Member"<<"Description";
     variableTable->setHorizontalHeaderLabels(variableHeader);
     variableTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
@@ -154,8 +149,6 @@ void myLinkDialog::createVariableGroupBox()
 
     firstRowLayout->addWidget(variableCompLabel1);
     firstRowLayout->addWidget(variableCompLabel2);
-    secondRowLayout->addWidget(variableVPCombobox1);
-    secondRowLayout->addWidget(variableVPCombobox2);
     thirdRowLayout->addWidget(variableMemberCombobox1);
     thirdRowLayout->addWidget(variableMemberCombobox2);
 
@@ -367,16 +360,66 @@ void myLinkDialog::loadVariableTable()
 
             var = myLink->myVar.at(i);
 
-            combo = new QComboBox;
-            combo->insertItems(0,types);
-            combo->setCurrentText("V");
-            variableTable->setCellWidget(i,0,combo);
+            comp1 = new QTableWidgetItem;
+            comp1->setData(Qt::DisplayRole,var.fromComp->getCompName());
+            comp1->setTextAlignment(Qt::AlignCenter);
+            comp1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            variableTable->setItem(i,0,comp1);
+
+            member1 = new QTableWidgetItem;
+            member1->setData(Qt::DisplayRole,var.fromVarNum);
+            member1->setTextAlignment(Qt::AlignCenter);
+            member1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            variableTable->setItem(i,1,member1);
+
+            comp2 = new QTableWidgetItem;
+            comp2->setData(Qt::DisplayRole,var.toComp->getCompName());
+            comp2->setTextAlignment(Qt::AlignCenter);
+            comp2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            variableTable->setItem(i,2,comp2);
+
+            member2 = new QTableWidgetItem;
+            member2->setData(Qt::DisplayRole,var.toVarNum);
+            member2->setTextAlignment(Qt::AlignCenter);
+            member2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            variableTable->setItem(i,3,member2);
+
+            description = new QTableWidgetItem;
+            description->setData(Qt::DisplayRole,var.description);
+            description->setTextAlignment(Qt::AlignCenter);
+            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            variableTable->setItem(i,4,description);
+        }
+    }
+}
+
+void myLinkDialog::loadIterationTable()
+{
+    iterationTable->clearContents();
+
+    QComboBox *combo = NULL;
+    QStringList types;
+    types<<"Variable"<<"Parameter";
+
+    QTableWidgetItem *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
+    varLink var;
+    if(!myLink->myStream.isEmpty()){
+        variableTable->setRowCount(myLink->myVar.count());
+        for(int i = 0; i < myLink->myVar.count();i++){
+
+            var = myLink->myVar.at(i);
+
 
             comp1 = new QTableWidgetItem;
             comp1->setData(Qt::DisplayRole,var.fromComp->getCompName());
             comp1->setTextAlignment(Qt::AlignCenter);
             comp1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-            variableTable->setItem(i,1,comp1);
+            variableTable->setItem(i,0,comp1);
+
+            combo = new QComboBox;
+            combo->insertItems(0,types);
+            combo->setCurrentText("Variable");
+            variableTable->setCellWidget(i,1,combo);
 
             member1 = new QTableWidgetItem;
             member1->setData(Qt::DisplayRole,var.fromVarNum);
@@ -390,72 +433,24 @@ void myLinkDialog::loadVariableTable()
             comp2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             variableTable->setItem(i,3,comp2);
 
+
+            combo = new QComboBox;
+            combo->insertItems(0,types);
+            combo->setCurrentText("Variable");
+            variableTable->setCellWidget(i,4,combo);
+
             member2 = new QTableWidgetItem;
             member2->setData(Qt::DisplayRole,var.toVarNum);
             member2->setTextAlignment(Qt::AlignCenter);
             member2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-            variableTable->setItem(i,4,member2);
+            variableTable->setItem(i,5,member2);
 
             description = new QTableWidgetItem;
             description->setData(Qt::DisplayRole,var.description);
             description->setTextAlignment(Qt::AlignCenter);
             description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-            variableTable->setItem(i,5,description);
+            variableTable->setItem(i,6,description);
         }
     }
-}
-
-void myLinkDialog::loadIterationTable()
-{
-    iterationTable->clearContents();
-
-//    QComboBox *combo = NULL;
-//    QStringList types;
-//    types<<"V"<<"P";
-
-//    QTableWidgetItem *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
-//    varLink var;
-//    if(!myLink->myStream.isEmpty()){
-//        variableTable->setRowCount(myLink->myVar.count());
-//        for(int i = 0; i < myLink->myVar.count();i++){
-
-//            var = myLink->myVar.at(i);
-
-//            combo = new QComboBox;
-//            combo->insertItems(0,types);
-//            combo->setCurrentText("V");
-//            variableTable->setCellWidget(i,0,combo);
-
-//            comp1 = new QTableWidgetItem;
-//            comp1->setData(Qt::DisplayRole,var.fromComp->getCompName());
-//            comp1->setTextAlignment(Qt::AlignCenter);
-//            comp1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-//            variableTable->setItem(i,1,comp1);
-
-//            member1 = new QTableWidgetItem;
-//            member1->setData(Qt::DisplayRole,var.fromVarNum);
-//            member1->setTextAlignment(Qt::AlignCenter);
-//            member1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-//            variableTable->setItem(i,2,member1);
-
-//            comp2 = new QTableWidgetItem;
-//            comp2->setData(Qt::DisplayRole,var.toComp->getCompName());
-//            comp2->setTextAlignment(Qt::AlignCenter);
-//            comp2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-//            variableTable->setItem(i,3,comp2);
-
-//            member2 = new QTableWidgetItem;
-//            member2->setData(Qt::DisplayRole,var.toVarNum);
-//            member2->setTextAlignment(Qt::AlignCenter);
-//            member2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-//            variableTable->setItem(i,4,member2);
-
-//            description = new QTableWidgetItem;
-//            description->setData(Qt::DisplayRole,var.description);
-//            description->setTextAlignment(Qt::AlignCenter);
-//            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-//            variableTable->setItem(i,5,description);
-//        }
-//    }
 }
 
