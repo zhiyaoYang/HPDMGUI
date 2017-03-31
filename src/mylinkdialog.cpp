@@ -129,11 +129,16 @@ void myLinkDialog::createVariableGroupBox()
 
     variableMemberCombobox1 = new QComboBox;
     variableMemberCombobox2 = new QComboBox;
+
+    QStringList vars;
+
+
+
     variableAddButton = new QPushButton(tr("Add"));
     variableRemoveButton = new QPushButton(tr("Remove"));
 
     variableTable = new QTableWidget;
-    variableTable->setColumnCount(6);
+    variableTable->setColumnCount(5);
     QStringList variableHeader;
     variableHeader<<"Component"<<"Member"<<"Component"<<"Member"<<"Description";
     variableTable->setHorizontalHeaderLabels(variableHeader);
@@ -174,7 +179,7 @@ void myLinkDialog::createIterationGroupBox()
     iterationCompLabel2 = new QLabel(QString::number(myComp2->getIndex())+"-"+myComp2->getCompName());
     iterationDirectionButton = new QPushButton(">>>>>");
     iterationVPCombobox1= new QComboBox;
-    iterationVPCombobox1->insertItem(0,"iteration");
+    iterationVPCombobox1->insertItem(0,"Iteration");
     iterationVPCombobox1->insertItem(0,"Parameter");
     iterationVPCombobox2= new QComboBox;
     iterationVPCombobox2->insertItem(0,"iteration");
@@ -354,7 +359,7 @@ void myLinkDialog::loadVariableTable()
 
     QTableWidgetItem *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
     varLink var;
-    if(!myLink->myStream.isEmpty()){
+    if(!myLink->myVar.isEmpty()){
         variableTable->setRowCount(myLink->myVar.count());
         for(int i = 0; i < myLink->myVar.count();i++){
 
@@ -403,7 +408,7 @@ void myLinkDialog::loadIterationTable()
 
     QTableWidgetItem *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
     varLink var;
-    if(!myLink->myStream.isEmpty()){
+    if(!myLink->mySuccessive.isEmpty()){
         variableTable->setRowCount(myLink->myVar.count());
         for(int i = 0; i < myLink->myVar.count();i++){
 
