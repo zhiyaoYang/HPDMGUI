@@ -40,8 +40,8 @@ myMainwindow::myMainwindow(QWidget *parent) :
     scene ->setSceneRect(-10000, -10000, 20000, 20000);
     view->setScene(scene);
     view->setRenderHint(QPainter::TextAntialiasing);
-//    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-//    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 
 

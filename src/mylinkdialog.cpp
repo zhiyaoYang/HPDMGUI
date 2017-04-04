@@ -231,15 +231,12 @@ void myLinkDialog::createIterationGroupBox()
     iterationMemberCombobox1 = new QComboBox;
     iterationMemberCombobox2 = new QComboBox;
 
-
-
     iterationTable = new QTableWidget;
     iterationTable->setColumnCount(7);
     QStringList iterationHeader;
     iterationHeader<<"From Component"<<"V/P"<<"Name"<<"To Component"<<"V/P"<<"Name"<<"Description";
     iterationTable->setHorizontalHeaderLabels(iterationHeader);
     iterationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
 
     //setting layout
     QVBoxLayout *mainLayout = new QVBoxLayout;
