@@ -30,6 +30,8 @@ private slots:
     void streamDirectionFlipped();
     void iterationDirectionFlipped();
 
+    void vp1ComboChanged(QString str);
+    void vp2ComboChanged(QString str);
 private:
 
     void createStreamGroupBox();
@@ -93,6 +95,11 @@ private:
 
     bool streamRightDirection;
     bool iterationRightDirection;
+
+    QStringList vars1;
+    QStringList vars2;
+    QStringList pars1;
+    QStringList pars2;
 
     link * myLink;
 };

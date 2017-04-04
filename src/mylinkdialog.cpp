@@ -15,6 +15,22 @@ myLinkDialog::myLinkDialog(link *mlink)
     myComp1 = myLink->getComp1();
     myComp2 = myLink->getComp2();
 
+
+    for(int i = 0; i < myComp1->myVar.count();i++){
+        vars1<<myComp1->myVar.at(i).name;
+    }
+
+    for(int i = 0; i < myComp2->myVar.count();i++){
+        vars2<<myComp2->myVar.at(i).name;
+    }
+
+    for(int i = 0; i < myComp1->myPar.count();i++){
+        pars1<<myComp1->myPar.at(i).name;
+    }
+
+    for(int i = 0; i < myComp2->myPar.count();i++){
+        pars2<<myComp2->myPar.at(i).name;
+    }
     initialize();
 }
 
@@ -59,6 +75,30 @@ void myLinkDialog::iterationDirectionFlipped()
         iterationDirectionButton->setText("<<<<<");
     }
 
+}
+
+void myLinkDialog::vp1ComboChanged(QString str)
+{
+    if(str=="Variable"){
+        iterationMemberCombobox1->clear();
+        iterationMemberCombobox1->insertItems(0,vars1);
+    }
+    else{
+        iterationMemberCombobox1->clear();
+        iterationMemberCombobox1->insertItems(0,pars1);
+    }
+}
+
+void myLinkDialog::vp2ComboChanged(QString str)
+{
+    if(str=="Parameter"){
+        iterationMemberCombobox2->clear();
+        iterationMemberCombobox2->insertItems(0,vars2);
+    }
+    else{
+        iterationMemberCombobox2->clear();
+        iterationMemberCombobox2->insertItems(0,pars2);
+    }
 }
 
 void myLinkDialog::createStreamGroupBox()
@@ -130,8 +170,8 @@ void myLinkDialog::createVariableGroupBox()
     variableMemberCombobox1 = new QComboBox;
     variableMemberCombobox2 = new QComboBox;
 
-    QStringList vars;
-
+    variableMemberCombobox1->insertItems(0,vars1);
+    variableMemberCombobox2->insertItems(0,vars2);
 
 
     variableAddButton = new QPushButton(tr("Add"));
@@ -179,16 +219,19 @@ void myLinkDialog::createIterationGroupBox()
     iterationCompLabel2 = new QLabel(QString::number(myComp2->getIndex())+"-"+myComp2->getCompName());
     iterationDirectionButton = new QPushButton(">>>>>");
     iterationVPCombobox1= new QComboBox;
-    iterationVPCombobox1->insertItem(0,"Iteration");
+    iterationVPCombobox1->insertItem(0,"Variable");
     iterationVPCombobox1->insertItem(0,"Parameter");
     iterationVPCombobox2= new QComboBox;
-    iterationVPCombobox2->insertItem(0,"iteration");
+    iterationVPCombobox2->insertItem(0,"Variable");
     iterationVPCombobox2->insertItem(0,"Parameter");
-    iterationMemberCombobox1 = new QComboBox;
-    iterationMemberCombobox2 = new QComboBox;
     iterationAddButton = new QPushButton(tr("Add"));
     iterationRemoveButton = new QPushButton(tr("Remove"));
     iterationReverseButton = new QPushButton(tr("Reverse"));
+
+    iterationMemberCombobox1 = new QComboBox;
+    iterationMemberCombobox2 = new QComboBox;
+
+
 
     iterationTable = new QTableWidget;
     iterationTable->setColumnCount(7);
@@ -226,6 +269,13 @@ void myLinkDialog::createIterationGroupBox()
     iterationGroupBox->setLayout(mainLayout);
 
     connect(iterationDirectionButton,SIGNAL(clicked(bool)),this,SLOT(iterationDirectionFlipped()));
+
+    connect(iterationVPCombobox1,SIGNAL(currentTextChanged(QString)),this,SLOT(vp1ComboChanged(QString)));
+    connect(iterationVPCombobox2,SIGNAL(currentTextChanged(QString)),this,SLOT(vp2ComboChanged(QString)));
+
+
+    iterationVPCombobox1->setCurrentIndex(0);
+    iterationVPCombobox2->setCurrentIndex(0);
 }
 
 void myLinkDialog::createButtonGroupBox()
