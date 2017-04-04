@@ -98,7 +98,7 @@ void myCompDialog::createVariableGroupBox()
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     variableResetButton = new QPushButton("Reset Variables");
-    variableHideButton = new QPushButton("Hide Empty");
+    variableHideButton = new QPushButton("Show Empty");
     variableEmptyHidden = true;
 
     QSpacerItem *sItem = new QSpacerItem(0,0,QSizePolicy::Expanding,QSizePolicy::Maximum);
@@ -172,15 +172,14 @@ void myCompDialog::parameterResetClicked()
 void myCompDialog::variableHideToggled()
 {
 
-    variableEmptyHidden = (!variableEmptyHidden);
     if(variableEmptyHidden){
-        qDebug()<<"show empty!";
-        variableHideButton->setText("Hide Empty");
+        showEmptyVar();
     }
     else{
-        qDebug()<<"hide empty!";
-        variableHideButton->setText("Show Empty");
+        hideEmptyVar();
     }
+
+    variableEmptyHidden = (!variableEmptyHidden);
 }
 
 
@@ -206,6 +205,7 @@ void myCompDialog::initialize()
     setWindowTitle(tr("Component Settings"));
 
     readData();
+    hideEmptyVar();
 }
 
 void myCompDialog::readData()
@@ -312,7 +312,7 @@ void myCompDialog::loadVariableTable()
 
             vDescription = new QTableWidgetItem;
             vDescription->setData(Qt::DisplayRole,var.description);
-            vDescription->setTextAlignment(Qt::AlignLeft);
+            vDescription->setTextAlignment(Qt::AlignCenter);
             vDescription->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             variableTable->setItem(i,3,vDescription);
 
@@ -329,4 +329,24 @@ void myCompDialog::loadVariableTable()
         }
     }
 
+}
+
+void myCompDialog::hideEmptyVar()
+{
+    QTableWidgetItem* item = NULL;
+    for(int i = 0; i < variableTable->rowCount();i++){
+        item = variableTable->item(i,2);
+        if(item->text()==""){
+            variableTable->hideRow(i);
+        }
+    }
+    variableHideButton->setText("Show Empty");
+}
+
+void myCompDialog::showEmptyVar()
+{
+    for(int i = 0; i < variableTable->rowCount();i++){
+        variableTable->showRow(i);
+    }
+    variableHideButton->setText("Hide Empty");
 }

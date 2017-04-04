@@ -42,6 +42,9 @@ private:
     void loadParameterTable();
     void loadVariableTable();
 
+    void hideEmptyVar();
+    void showEmptyVar();
+
     QTabWidget *tabWidget;
 
     QGroupBox *infoGroupBox;
