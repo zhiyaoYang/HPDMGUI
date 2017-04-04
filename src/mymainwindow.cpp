@@ -43,12 +43,21 @@ myMainwindow::myMainwindow(QWidget *parent) :
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-
-
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(5);
     layout->addWidget(view);
     widget->setLayout(layout);
+
+    myToolBar = addToolBar(tr("top"));
+    QList<QAction*> list;
+    list.append(openHPDMAct);
+    list.append(panAct);
+    list.append(selectAct);
+    list.append(zoomToFitAct);
+
+    myToolBar->setEnabled(true);
+
+
 
     initialize();
 }
@@ -130,6 +139,78 @@ void myMainwindow::enableDrag(bool compDrag)
     scene->enableDrag(compDrag);
 }
 
+void myMainwindow::switchPan()
+{
+    view->setDragMode(QGraphicsView::ScrollHandDrag);
+    selectAct->setChecked(false);
+    panAct->setChecked(true);
+    view->setInteractive(false);
+}
+
+void myMainwindow::switchSelect()
+{
+    view->setDragMode(QGraphicsView::NoDrag);
+    selectAct->setChecked(true);
+    panAct->setChecked(false);
+    view->setInteractive(true);
+}
+
+void myMainwindow::zoomToFit()
+{
+//    double xb=0,yb=0,xmax = 0, ymax = 0, xratio = 0, yratio = 0, ratio = 0;
+//    unit * iterator = dummy;
+//    int textCount = globalpara.sceneText.count();
+//    if(iterator->next!=NULL)
+//    {
+//        xmax = -fabs(iterator->next->scenePos().x());
+//        ymax = -fabs(iterator->next->scenePos().y());
+//        for(int i = 0; i < globalcount;i++)
+//        {
+//            iterator = iterator->next;
+//            xb+=iterator->scenePos().x();
+//            yb+=iterator->scenePos().y();
+//            if(xmax<iterator->scenePos().x())
+//                xmax = iterator->scenePos().x();
+//            if(ymax<iterator->scenePos().y())
+//                ymax = iterator->scenePos().y();
+//        }
+
+//        for(int i = 0; i < textCount; i++)
+//        {
+//            xb+= globalpara.sceneText.at(i)->scenePos().x();
+//            yb+= globalpara.sceneText.at(i)->scenePos().y();
+//            if(xmax<globalpara.sceneText.at(i)->scenePos().x())
+//                xmax=globalpara.sceneText.at(i)->scenePos().x();
+//            if(ymax<globalpara.sceneText.at(i)->scenePos().y())
+//                ymax=globalpara.sceneText.at(i)->scenePos().y();
+//        }
+//        xb = xb / (globalcount+textCount);
+//        yb = yb / (globalcount+textCount);
+
+
+//        xratio = view->size().width()/((2*(xmax-xb+100)+1)*view->myScale);
+//        yratio = view->size().height()/((2*(ymax-yb+100)+1)*view->myScale);
+//        ratio = xratio;
+//        if(ratio>yratio)
+//            ratio = yratio;
+//        ///commented: auto zoom up to as much as the orignal size
+//        if(ratio*view->myScale<=2)
+//        {
+//            view->myScale *= ratio;
+//            view->scale(ratio,ratio);
+//            view->setScale();
+
+//        }
+//        else
+//        {
+//            view->scale(2/view->myScale,2/view->myScale);
+//            view->myScale = 2;
+//            view->setScale();
+//        }
+//        view->centerOn(xb,yb);
+//    }
+}
+
 void myMainwindow::help()
 {
     QStringList list;
@@ -197,15 +278,16 @@ void myMainwindow::createActions()
     openAct->setStatusTip(tr("Open an existing case"));
     connect(openAct,&QAction::triggered,this,&myMainwindow::open);
 
-    openHPDMAct = new QAction(tr("&Load .hpdm File"),this);
-//    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
-    openHPDMAct->setStatusTip(tr("Load a .hpdm file"));
-    connect(openHPDMAct,&QAction::triggered,this,&myMainwindow::openHPDM);
 
     saveAct = new QAction(tr("&Save"),this);
     saveAct->setShortcuts(QKeySequence::Save);//crl+S
     saveAct->setStatusTip(tr("Save current case"));
     connect(saveAct,&QAction::triggered,this,&myMainwindow::save);
+
+    openHPDMAct = new QAction(tr("&Load .hpdm File"),this);
+//    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
+    openHPDMAct->setStatusTip(tr("Load a .hpdm file"));
+    connect(openHPDMAct,&QAction::triggered,this,&myMainwindow::openHPDM);
 
     exitAct = new QAction(tr("&Exit"),this);
     exitAct->setStatusTip(tr("Exit HPDM gracefully"));
@@ -226,6 +308,20 @@ void myMainwindow::createActions()
     enableDragAct->setCheckable(true);
     enableDragAct->setChecked(true);
     connect(enableDragAct,&QAction::toggled,this,&myMainwindow::enableDrag);
+
+    panAct = new QAction(tr("&Pan"),this);
+    panAct->setStatusTip(tr("Pan mode to control the view"));
+    enableDragAct->setCheckable(true);
+    enableDragAct->setChecked(false);
+    connect(panAct,&QAction::triggered,this,&myMainwindow::switchPan);
+
+    selectAct = new QAction(tr("&Select"),this);
+    selectAct->setStatusTip(tr("Resume to select mode"));
+    connect(selectAct,&QAction::triggered,this,&myMainwindow::switchSelect);
+
+    zoomToFitAct = new QAction(tr("&Center"),this);
+    zoomToFitAct->setStatusTip(tr("Zoom to fit the entire system"));
+    connect(zoomToFitAct,&QAction::triggered,this,&myMainwindow::zoomToFit);
 
     helpAct = new QAction(tr("&Help"),this);
 //    helpAct->setShortcuts(QKeySequence::New);
@@ -254,6 +350,9 @@ void myMainwindow::createMenus()
     editMenu->addAction(newLinkAct);
     editMenu->addSeparator();
     editMenu->addAction(enableDragAct);
+    editMenu->addAction(panAct);
+    editMenu->addAction(selectAct);
+    editMenu->addAction(zoomToFitAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(helpAct);
@@ -285,6 +384,7 @@ void myMainwindow::createDockWindows()
 
     addDockWidget(Qt::RightDockWidgetArea,sysPicDock);
     addDockWidget(Qt::RightDockWidgetArea,compListDock);
+
 }
 
 void myMainwindow::createStatusBar()

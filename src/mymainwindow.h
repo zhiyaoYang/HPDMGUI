@@ -43,6 +43,9 @@ private slots:
     void newComponent();
     void newLink();
     void enableDrag(bool compDrag);
+    void switchPan();
+    void switchSelect();
+    void zoomToFit();
 
     //help menu
     void help();
@@ -78,8 +81,12 @@ private:
     QAction *enableDragAct;
     QAction *helpAct;
     QAction *aboutAct;
+    QAction *panAct;
+    QAction *selectAct;
+    QAction *zoomToFitAct;
 
     QLabel *sysPic;
+    QToolBar *myToolBar;
     QListWidget *introduction;
 
     QStringList equationLines;
