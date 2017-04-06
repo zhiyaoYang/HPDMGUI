@@ -7,8 +7,6 @@ todo list:
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* linkDialog: change system data
 	* componentDialog: change system data
-	* view control: pan and center
-	* dock control: show/dismiss
 	* replace icon with pic
 	* toggle connection display
 	* system level settings (referigerant)

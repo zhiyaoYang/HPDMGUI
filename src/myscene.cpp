@@ -49,16 +49,13 @@ myScene::myScene()
 
 void myScene::drawComponent(component * comp,double x, double y)
 {
-    QPen pen(Qt::white);
-    double width = 30;
-//    if(comp->getTypeIndex()==38){
-//        //fluid line component
-//        width = 15;
-//    }
-    rect = this->addRect(x-width,y-width,2*width,2*width);
-    rect->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
-    rect->setPen(pen);
-    rect->setZValue(2);
+//    QPen pen(Qt::white);
+//    double width = 30;
+
+//    rect = this->addRect(x-width,y-width,2*width,2*width);
+//    rect->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
+//    rect->setPen(pen);
+//    rect->setZValue(2);
 
 
     int tempIndex = head->getIndex();
@@ -67,14 +64,22 @@ void myScene::drawComponent(component * comp,double x, double y)
     head->next = NULL;
     head->setIndex(tempIndex+1);
 
+
+    QPixmap pic("pump-icon.png");
+    pic = pic.scaled(60,60,Qt::KeepAspectRatio);
+    head->setPixmap(pic);
+
     head->draw();
     head->text->setText(head->getCompName());
 
+    this->addItem(head);
+
     head->moveBy(x,y);
 
-    head->setParentItem(rect);
+//    head->setParentItem(rect);
 
     head->setMovable(true);
+
 
 }
 

@@ -2,6 +2,7 @@
 #define COMPONENT_H
 
 #include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
 #include <QPainter>
 #include <QString>
 #include <QSet>
@@ -35,13 +36,13 @@ struct equation{
 
 
 
-class component : public QGraphicsItem
+class component : public QGraphicsPixmapItem
 {
 public:
     component();
 
-    void paint(QPainter *painter,
-               const QStyleOptionGraphicsItem *option, QWidget *widget);
+//    void paint(QPainter *painter,
+//               const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPointF getPos();
     void draw();
     void setMovable(bool movable);
@@ -79,7 +80,7 @@ public slots:
 
 private:
 
-    QRectF boundingRect() const;
+//    QRectF boundingRect() const;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     QGraphicsRectItem * rectangle;

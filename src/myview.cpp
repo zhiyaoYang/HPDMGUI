@@ -57,6 +57,4 @@ void myView::setScale()
         iterator = iterator->next;
         iterator->text->setScale(1/myScale);
     }
-
-    qDebug()<<"scale"<<myScale;
 }
