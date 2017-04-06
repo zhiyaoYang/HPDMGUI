@@ -157,58 +157,56 @@ void myMainwindow::switchSelect()
 
 void myMainwindow::zoomToFit()
 {
-//    double xb=0,yb=0,xmax = 0, ymax = 0, xratio = 0, yratio = 0, ratio = 0;
-//    unit * iterator = dummy;
-//    int textCount = globalpara.sceneText.count();
-//    if(iterator->next!=NULL)
-//    {
-//        xmax = -fabs(iterator->next->scenePos().x());
-//        ymax = -fabs(iterator->next->scenePos().y());
-//        for(int i = 0; i < globalcount;i++)
-//        {
-//            iterator = iterator->next;
-//            xb+=iterator->scenePos().x();
-//            yb+=iterator->scenePos().y();
-//            if(xmax<iterator->scenePos().x())
-//                xmax = iterator->scenePos().x();
-//            if(ymax<iterator->scenePos().y())
-//                ymax = iterator->scenePos().y();
-//        }
+    double xb=0, yb=0, xmax = 0, ymax = 0, xratio = 0, yratio = 0, ratio = 0;
+    component * iterator = dummy;
 
-//        for(int i = 0; i < textCount; i++)
-//        {
-//            xb+= globalpara.sceneText.at(i)->scenePos().x();
-//            yb+= globalpara.sceneText.at(i)->scenePos().y();
-//            if(xmax<globalpara.sceneText.at(i)->scenePos().x())
-//                xmax=globalpara.sceneText.at(i)->scenePos().x();
-//            if(ymax<globalpara.sceneText.at(i)->scenePos().y())
-//                ymax=globalpara.sceneText.at(i)->scenePos().y();
-//        }
-//        xb = xb / (globalcount+textCount);
-//        yb = yb / (globalcount+textCount);
+    if(iterator->next!=NULL)
+    {
+        xmax = -fabs(iterator->next->scenePos().x());
+        ymax = -fabs(iterator->next->scenePos().y());
+
+        int count = 0;
+
+        while(iterator->next!=NULL)
+        {
+            iterator = iterator->next;
+            count ++;
+            xb+=iterator->scenePos().x();
+            yb+=iterator->scenePos().y();
+            if(xmax<iterator->scenePos().x())
+                xmax = iterator->scenePos().x();
+            if(ymax<iterator->scenePos().y())
+                ymax = iterator->scenePos().y();
+        }
+
+        xb = xb / count;
+        yb = yb / count;
 
 
-//        xratio = view->size().width()/((2*(xmax-xb+100)+1)*view->myScale);
-//        yratio = view->size().height()/((2*(ymax-yb+100)+1)*view->myScale);
-//        ratio = xratio;
-//        if(ratio>yratio)
-//            ratio = yratio;
-//        ///commented: auto zoom up to as much as the orignal size
-//        if(ratio*view->myScale<=2)
-//        {
-//            view->myScale *= ratio;
-//            view->scale(ratio,ratio);
-//            view->setScale();
+        xratio = view->size().width()/((2*(xmax-xb+100)+1)*view->getScale());
+        yratio = view->size().height()/((2*(ymax-yb+100)+1)*view->getScale());
 
-//        }
-//        else
-//        {
-//            view->scale(2/view->myScale,2/view->myScale);
-//            view->myScale = 2;
-//            view->setScale();
-//        }
-//        view->centerOn(xb,yb);
-//    }
+        ratio = xratio;
+
+        if(ratio>yratio)
+            ratio = yratio;
+
+
+        if(ratio*view->getScale()<=2)
+        {
+            view->setNewScale(view->getScale()*ratio);
+            view->scale(ratio,ratio);
+            view->setScale();
+
+        }
+        else
+        {
+            view->scale(2/view->getScale(),2/view->getScale());
+            view->setNewScale(2);
+            view->setScale();
+        }
+        view->centerOn(xb,yb);
+    }
 }
 
 void myMainwindow::help()

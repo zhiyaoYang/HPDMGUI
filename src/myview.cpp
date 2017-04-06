@@ -30,15 +30,20 @@ myView::myView(QWidget *parent)
 
 void myView::wheelEvent(QWheelEvent *event)
 {
-    if (event->delta() >0&&myScale<1.2)
+    if (event->delta() >0&&myScale<1.)
     {
         this->scale(1.1,1.1);
         myScale = myScale*1.1;
     }
-    if(event->delta()<0&&myScale>0.4)
+    else if(event->delta()<0&&myScale>0.5)
     {
         this->scale(0.8,0.8);
         myScale = myScale*0.8;
+    }
+    else if(event->delta()>0&&myScale<0.5)
+    {
+        this->scale(0.5/myScale,0.5/myScale);
+        myScale = 0.5;
     }
     setScale();
 
@@ -52,4 +57,6 @@ void myView::setScale()
         iterator = iterator->next;
         iterator->text->setScale(1/myScale);
     }
+
+    qDebug()<<"scale"<<myScale;
 }

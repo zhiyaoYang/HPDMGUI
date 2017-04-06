@@ -17,6 +17,8 @@ public slots:
 
     void wheelEvent(QWheelEvent *event);
     void setScale();
+    void setNewScale(double scale){myScale = scale;}
+    double getScale(){return myScale;}
 
 private slots:
 
