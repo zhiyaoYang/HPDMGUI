@@ -43,6 +43,7 @@ private slots:
     void newComponent();
     void newLink();
     void enableDrag(bool compDrag);
+    void enableDock(bool eDock);
     void switchPan();
     void switchSelect();
     void zoomToFit();
@@ -84,6 +85,7 @@ private:
     QAction *panAct;
     QAction *selectAct;
     QAction *zoomToFitAct;
+    QAction *enableDockAct;
 
     QLabel *sysPic;
     QToolBar *myToolBar;

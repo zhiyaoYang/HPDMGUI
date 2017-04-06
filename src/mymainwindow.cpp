@@ -139,6 +139,13 @@ void myMainwindow::enableDrag(bool compDrag)
     scene->enableDrag(compDrag);
 }
 
+void myMainwindow::enableDock(bool eDock)
+{
+    sysPicDock->setVisible(eDock);
+    compListDock->setVisible(eDock);
+
+}
+
 void myMainwindow::switchPan()
 {
     view->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -182,7 +189,6 @@ void myMainwindow::zoomToFit()
         xb = xb / count;
         yb = yb / count;
 
-
         xratio = view->size().width()/((2*(xmax-xb+100)+1)*view->getScale());
         yratio = view->size().height()/((2*(ymax-yb+100)+1)*view->getScale());
 
@@ -191,13 +197,11 @@ void myMainwindow::zoomToFit()
         if(ratio>yratio)
             ratio = yratio;
 
-
         if(ratio*view->getScale()<=2)
         {
             view->setNewScale(view->getScale()*ratio);
             view->scale(ratio,ratio);
             view->setScale();
-
         }
         else
         {
@@ -301,11 +305,16 @@ void myMainwindow::createActions()
     connect(newLinkAct,&QAction::triggered,this,&myMainwindow::newLink);
 
     enableDragAct = new QAction(tr("&Enable Dragging"),this);
-//    enableDragAct->setShortcuts(QKeySequence::New);
     enableDragAct->setStatusTip(tr("Toggle dragging"));
     enableDragAct->setCheckable(true);
     enableDragAct->setChecked(true);
     connect(enableDragAct,&QAction::toggled,this,&myMainwindow::enableDrag);
+
+    enableDockAct = new QAction(tr("&Show/Hide Dock"),this);
+    enableDockAct->setStatusTip(tr("Toggle show/hide dock"));
+    enableDockAct->setCheckable(true);
+    enableDockAct->setChecked(true);
+    connect(enableDockAct,&QAction::toggled,this,&myMainwindow::enableDock);
 
     panAct = new QAction(tr("&Pan"),this);
     panAct->setStatusTip(tr("Pan mode to control the view"));
@@ -348,6 +357,7 @@ void myMainwindow::createMenus()
     editMenu->addAction(newLinkAct);
     editMenu->addSeparator();
     editMenu->addAction(enableDragAct);
+    editMenu->addAction(enableDockAct);
     editMenu->addAction(panAct);
     editMenu->addAction(selectAct);
     editMenu->addAction(zoomToFitAct);
@@ -363,7 +373,7 @@ void myMainwindow::createDockWindows()
     sysPicDock->setAllowedAreas(Qt::RightDockWidgetArea);
 
     QPixmap pic("System.png");
-    pic = pic.scaled(500,500,Qt::KeepAspectRatio);
+    pic = pic.scaled(400,400,Qt::KeepAspectRatio);
     sysPic = new QLabel(sysPicDock);
     sysPic->setPixmap(pic);
     sysPicDock->setWidget(sysPic);
@@ -382,6 +392,9 @@ void myMainwindow::createDockWindows()
 
     addDockWidget(Qt::RightDockWidgetArea,sysPicDock);
     addDockWidget(Qt::RightDockWidgetArea,compListDock);
+
+    sysPicDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    compListDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
 }
 
