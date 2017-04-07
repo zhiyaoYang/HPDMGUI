@@ -7,15 +7,15 @@ todo list:
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* linkDialog: change system data
 	* componentDialog: change system data
-	* replace icon with pic
-	* toggle connection display
+	* replace icon with pic (center link ends)
+	
 	* system level settings (referigerant)
 	* write into .hpdm file
 	* run calculation
 	* read and display results
 	
 * later version
-	* smaller drawing for stream line component (or jump to designated icons for components in later versions)
+	* designated icon/schematic for each component
 	* system level overview table (master panel)
 	* fomula: special component
 	* sync with external component list & allow adding new component
@@ -23,7 +23,7 @@ todo list:
 
 
 	
-last updated: 4/4/2017
+last updated: 4/7/2017
 
 
 note:

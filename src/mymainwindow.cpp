@@ -146,6 +146,21 @@ void myMainwindow::enableDock(bool eDock)
 
 }
 
+void myMainwindow::enableLink(bool eLink)
+{
+    component * iterator = dummy;
+
+    while(iterator->next!=NULL){
+        iterator = iterator->next;
+
+        if(!iterator->myLinks.isEmpty()){
+            foreach(link* l,iterator->myLinks){
+                l->setVisible(eLink);
+            }
+        }
+    }
+}
+
 void myMainwindow::switchPan()
 {
     view->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -318,12 +333,21 @@ void myMainwindow::createActions()
 
     panAct = new QAction(tr("&Pan"),this);
     panAct->setStatusTip(tr("Pan mode to control the view"));
-    enableDragAct->setCheckable(true);
-    enableDragAct->setChecked(false);
+    panAct->setCheckable(true);
+    panAct->setChecked(false);
     connect(panAct,&QAction::triggered,this,&myMainwindow::switchPan);
+
+
+    enableLinkAct = new QAction(tr("&Show/Hide Links"),this);
+    enableLinkAct->setStatusTip(tr(""));
+    enableLinkAct->setCheckable(true);
+    enableLinkAct->setChecked(false);
+    connect(enableLinkAct,&QAction::triggered,this,&myMainwindow::enableLink);
 
     selectAct = new QAction(tr("&Select"),this);
     selectAct->setStatusTip(tr("Resume to select mode"));
+    selectAct->setCheckable(true);
+    selectAct->setChecked(true);
     connect(selectAct,&QAction::triggered,this,&myMainwindow::switchSelect);
 
     zoomToFitAct = new QAction(tr("&Center"),this);
@@ -356,6 +380,7 @@ void myMainwindow::createMenus()
     editMenu->addAction(newCompAct);
     editMenu->addAction(newLinkAct);
     editMenu->addSeparator();
+    editMenu->addAction(enableLinkAct);
     editMenu->addAction(enableDragAct);
     editMenu->addAction(enableDockAct);
     editMenu->addAction(panAct);
@@ -605,6 +630,9 @@ bool myMainwindow::loadHPDMFile(QString name)
         stream.flush();
         ofile.close();
     }
+
+    enableLink(false);
+
     return true;
 }
 

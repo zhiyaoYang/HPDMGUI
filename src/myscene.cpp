@@ -79,8 +79,6 @@ void myScene::drawComponent(component * comp,double x, double y)
 //    head->setParentItem(rect);
 
     head->setMovable(true);
-
-
 }
 
 link *myScene::addLink(component *comp1, component *comp2)
@@ -139,10 +137,9 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     if(!items.isEmpty()){
         QGraphicsItem* tempItem = items.first();
-        qDebug()<<tempItem<<tempItem->scenePos()<<tempItem->flags()<<tempItem->childItems().count();
         if(sceneAction == ""){//evoke property dialog
             if(tempItem->zValue()==2){//component
-                component* comp = dynamic_cast<component*>(tempItem->childItems().first());
+                component* comp = dynamic_cast<component*>(tempItem);
                 if(comp->equation==""){
                     myCompDialog * compDialog = new myCompDialog(comp);
                     compDialog->exec();
@@ -157,19 +154,16 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
                 //find out why need to go through "parent item"
 
-
-                qDebug()<<tempItem<<tempItem->parentItem();
                 if(tempItem->parentItem()->zValue()==3){
                     link * myLink = dynamic_cast<link*>(tempItem->parentItem());
                     myLinkDialog *linkDialog = new myLinkDialog(myLink);
                     linkDialog->exec();
                 }
             }
-
         }
         else if(sceneAction == "makeLink"){//select component to make link
             if(tempItem->zValue()==2){//component
-                component* comp = dynamic_cast<component*>(tempItem->childItems().first());
+                component* comp = dynamic_cast<component*>(tempItem);
                 QApplication::restoreOverrideCursor();
 
                 if(selectedComponent.isEmpty()){//fist component
@@ -243,15 +237,8 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                         selectedComponent.clear();
                         sceneAction = "";
                     }
-
                 }
             }
-
         }
-
-
     }
-
-
-
 }

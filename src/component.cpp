@@ -64,7 +64,7 @@ void component::draw()
 //    rectangle->setRect(rect);
 //    rectangle->setPen(blackpen);
 
-    text->moveBy(-20,18);
+    text->moveBy(15,55);
     text->setFlags(QGraphicsItem::ItemIsFocusable);
     //todo: restrict the area where this text item can be moved
     text->setParentItem(this);
