@@ -187,12 +187,43 @@ void myLinkDialog::addStream()
 
 void myLinkDialog::removeStream()
 {
-
+    int row = streamTable->currentRow();
+    if(row ==-1){
+        QMessageBox *mb = new QMessageBox;
+        mb->setText("Please select the stream to remove!");
+        mb->exec();
+        return;
+    }
+    else{
+        streamTable->removeRow(row);
+        return;
+    }
 }
 
 void myLinkDialog::reverseStream()
 {
 
+    int row = streamTable->currentRow();
+    qDebug()<<row;
+    if(row ==-1){
+        QMessageBox *mb = new QMessageBox;
+        mb->setText("Please select the stream to remove!");
+        mb->exec();
+        return;
+    }
+    else{
+        QString fromComp;
+        int fromValue;
+        fromComp = streamTable->item(row,1)->text();
+        fromValue = dynamic_cast<QSpinBox*>(streamTable->cellWidget(row,2))->value();
+
+        streamTable->item(row,1)->setText(streamTable->item(row,3)->text());
+        dynamic_cast<QSpinBox*>(streamTable->cellWidget(row,2))->setValue(dynamic_cast<QSpinBox*>(streamTable->cellWidget(row,4))->value());
+
+        streamTable->item(row,3)->setText(fromComp);
+        dynamic_cast<QSpinBox*>(streamTable->cellWidget(row,4))->setValue(fromValue);
+        return;
+    }
 }
 
 void myLinkDialog::createStreamGroupBox()
