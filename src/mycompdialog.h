@@ -45,6 +45,8 @@ private:
     void hideEmptyVar();
     void showEmptyVar();
 
+    void updateComponentLabels();
+
     QTabWidget *tabWidget;
 
     QGroupBox *infoGroupBox;

@@ -139,7 +139,52 @@ void myCompDialog::createButtonGroupBox()
 void myCompDialog::doneClicked()
 {
     //todo: perform validity check first
-    //todo: update system with data input in each text edits
+
+    myComponent->setCompName(infoNameLineEdit->text());
+    myComponent->setCompDescription(infoDescriptionLineEdit->text());
+
+    QTableWidgetItem * item = NULL;
+    QComboBox * box = NULL;
+
+    parameter par;
+    for(int i = 0; i < parameterTable->rowCount();i++){
+
+        par = myComponent->findPar(i);
+
+        item = parameterTable->item(i,1);
+        par.name = item->text();
+        item = parameterTable->item(i,2);
+        par.value = item->data(Qt::DisplayRole).toString();
+        item = parameterTable->item(i,3);
+        par.description = item->text();
+        box = dynamic_cast<QComboBox*>(parameterTable->cellWidget(i,4));
+        par.iORd = box->currentText();
+
+        myComponent->myPar.replace(i,par);
+
+    }
+
+    variable var;
+    for(int i = 0; i < variableTable->rowCount();i++){
+
+        var = myComponent->findVar(i);
+
+        item = variableTable->item(i,1);
+        var.name = item->text();
+        item = variableTable->item(i,2);
+        var.value = item->text();
+        item = variableTable->item(i,3);
+        var.description = item->text();
+        box = dynamic_cast<QComboBox*>(variableTable->cellWidget(i,4));
+        var.solvingSetting = box->currentText();
+        box = dynamic_cast<QComboBox*>(variableTable->cellWidget(i,5));
+        var.enabled = box->currentText();
+
+        myComponent->myVar.replace(i,var);
+    }
+
+    updateComponentLabels();
+
     accept();
 }
 
@@ -214,7 +259,9 @@ void myCompDialog::readData()
     infoNameLineEdit->setText(myComponent->getCompName());
     infoDescriptionLineEdit->setText(myComponent->getCompDescription());
 
-    QPixmap pic("testComponent.png");
+
+    QPixmap pic("compPic/illustrations/Component"+QString::number(myComponent->getTypeIndex())+".png");
+
     pic = pic.scaled(200,200,Qt::KeepAspectRatio);
     infoPicLabel->setPixmap(pic);
 
@@ -249,7 +296,7 @@ void myCompDialog::loadParameterTable()
             pName = new QTableWidgetItem;
             pName->setData(Qt::DisplayRole,par.name);
             pName->setTextAlignment(Qt::AlignCenter);
-            pName->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            pName->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             parameterTable->setItem(i,1,pName);
 
             pValue = new QTableWidgetItem;
@@ -301,7 +348,7 @@ void myCompDialog::loadVariableTable()
             vName = new QTableWidgetItem;
             vName->setData(Qt::DisplayRole,var.name);
             vName->setTextAlignment(Qt::AlignCenter);
-            vName->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            vName->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             variableTable->setItem(i,1,vName);
 
             vValue = new QTableWidgetItem;
@@ -313,7 +360,7 @@ void myCompDialog::loadVariableTable()
             vDescription = new QTableWidgetItem;
             vDescription->setData(Qt::DisplayRole,var.description);
             vDescription->setTextAlignment(Qt::AlignCenter);
-            vDescription->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            vDescription->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             variableTable->setItem(i,3,vDescription);
 
             combo = new QComboBox;
@@ -349,4 +396,9 @@ void myCompDialog::showEmptyVar()
         variableTable->showRow(i);
     }
     variableHideButton->setText("Hide Empty");
+}
+
+void myCompDialog::updateComponentLabels()
+{
+    myComponent->componentLabel->setText(myComponent->getCompName());
 }

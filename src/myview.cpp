@@ -55,6 +55,6 @@ void myView::setScale()
     while(iterator->next!=NULL)
     {
         iterator = iterator->next;
-        iterator->text->setScale(1/myScale);
+        iterator->componentLabel->setScale(1/myScale);
     }
 }

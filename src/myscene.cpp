@@ -70,7 +70,7 @@ void myScene::drawComponent(component * comp,double x, double y)
     head->setPixmap(pic);
 
     head->draw();
-    head->text->setText(head->getCompName());
+    head->componentLabel->setText(head->getCompName());
 
     this->addItem(head);
 
@@ -97,10 +97,10 @@ void myScene::enableDrag(bool compDrag, bool textDrag)
         iterator = iterator->next;
         iterator->setMovable(compDrag);
         if(compDrag){
-            iterator->text->setFlags(QGraphicsItem::ItemIsFocusable);
+            iterator->componentLabel->setFlags(QGraphicsItem::ItemIsFocusable);
         }
         else {
-            iterator->text->setFlags(QGraphicsItem::ItemIsMovable);
+            iterator->componentLabel->setFlags(QGraphicsItem::ItemIsMovable);
         }
     }
 

@@ -64,9 +64,16 @@ public:
             }
         }
     }
+    parameter findPar(int i){
+        foreach(parameter p, myPar){
+            if(p.index==i){
+                return p;
+            }
+        }
+    }
 
     component* next;
-    QGraphicsSimpleTextItem * text;
+    QGraphicsSimpleTextItem * componentLabel;
     QSet<link *> myLinks;
 
     QList<parameter> myPar;
