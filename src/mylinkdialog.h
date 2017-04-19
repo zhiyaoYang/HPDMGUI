@@ -32,6 +32,11 @@ private slots:
 
     void vp1ComboChanged(QString str);
     void vp2ComboChanged(QString str);
+
+    void addStream();
+    void removeStream();
+    void reverseStream();
+
 private:
 
     void createStreamGroupBox();

@@ -12,6 +12,7 @@
 #include <QGridLayout>
 
 extern component *dummy;
+extern myMainwindow* mWindow;
 
 myCompDialog::myCompDialog(component *comp)
 {
@@ -122,9 +123,12 @@ void myCompDialog::createButtonGroupBox()
 
     doneButton = new QPushButton(tr("Done"));
     cancelButton = new QPushButton(tr("Cancel"));
+    showAllLinkButton = new QPushButton(tr("Show Related Links"));
+    showAllLinkButton->setCheckable(true);
 
     QSpacerItem *sItem = new QSpacerItem(0,0,QSizePolicy::Expanding,QSizePolicy::Expanding);
     layout->addItem(sItem);
+    layout->addWidget(showAllLinkButton);
     layout->addWidget(doneButton);
     layout->addWidget(cancelButton);
     buttonGroupBox->setLayout(layout);
@@ -133,6 +137,7 @@ void myCompDialog::createButtonGroupBox()
 
     connect(doneButton,SIGNAL(clicked(bool)),this, SLOT(doneClicked()));
     connect(cancelButton,SIGNAL(clicked(bool)),this,SLOT(reject()));
+    connect(showAllLinkButton,SIGNAL(toggled(bool)),this,SLOT(showAllLinkClicked(bool)));
 
 }
 
@@ -154,7 +159,7 @@ void myCompDialog::doneClicked()
         item = parameterTable->item(i,1);
         par.name = item->text();
         item = parameterTable->item(i,2);
-        par.value = item->data(Qt::DisplayRole).toString();
+        par.value = item->text();
         item = parameterTable->item(i,3);
         par.description = item->text();
         box = dynamic_cast<QComboBox*>(parameterTable->cellWidget(i,4));
@@ -401,4 +406,12 @@ void myCompDialog::showEmptyVar()
 void myCompDialog::updateComponentLabels()
 {
     myComponent->componentLabel->setText(myComponent->getCompName());
+}
+
+void myCompDialog::showAllLinkClicked(bool show)
+{
+    mWindow->enableLink(false);
+    foreach(link* l, myComponent->myLinks){
+        l->setVisible(show);
+    }
 }

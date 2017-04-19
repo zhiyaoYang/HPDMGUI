@@ -18,6 +18,7 @@ public:
 signals:
 
 public slots:
+    void enableLink(bool eLink);
 
 protected:
 #ifndef QT_NO_CONTEXTMENU
@@ -44,7 +45,6 @@ private slots:
     void newLink();
     void enableDrag(bool compDrag);
     void enableDock(bool eDock);
-    void enableLink(bool eLink);
     void switchPan();
     void switchSelect();
     void zoomToFit();
@@ -94,6 +94,7 @@ private:
     QListWidget *introduction;
 
     QStringList equationLines;
+    QString caseDirectory;
 
 
 };

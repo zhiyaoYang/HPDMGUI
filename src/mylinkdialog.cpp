@@ -49,8 +49,15 @@ void myLinkDialog::doneClicked()
 
 void myLinkDialog::resetClicked()
 {
-    //todo: overwrite text edits with data from system (same as when opening dialog)
-//    readData();
+    QMessageBox *mb = new QMessageBox("Reset the links",
+                                      "Discard current changes and reset all links?",
+                                      QMessageBox::Information,
+                                      QMessageBox::Yes,
+                                      QMessageBox::Cancel,
+                                      QMessageBox::NoButton);
+    if(mb->exec()==QMessageBox::Yes){
+        readData();
+    }
 
 }
 
@@ -99,6 +106,93 @@ void myLinkDialog::vp2ComboChanged(QString str)
         iterationMemberCombobox2->clear();
         iterationMemberCombobox2->insertItems(0,pars2);
     }
+}
+
+void myLinkDialog::addStream()
+{
+    QString fluid;
+    if(streamSubstanceCombobox->currentText()=="Coolant"){
+        fluid = "c";
+    }
+    else if(streamSubstanceCombobox->currentText()=="Air"){
+        fluid = "a";
+    }
+    else if(streamSubstanceCombobox->currentText()=="Refrigerant"){
+        fluid = "s";
+    }
+
+    bool sameFluid, sameFromPort, sameToPort;
+    component* fromComp = myComp1, *toComp= myComp2;
+    int fromPort = streamIOSpinBox1->value(), toPort = streamIOSpinBox2->value(), temp;
+    if(streamDirectionButton->text()=="<<<<<"){
+        fromComp = myComp2;
+        toComp = myComp1;
+        temp = fromPort;
+        fromPort = toPort;
+        toPort = temp;
+    }
+
+    for(int i = 0; i < streamTable->rowCount();i++){
+        sameFluid = (dynamic_cast<QComboBox*>(streamTable->cellWidget(i,0))->currentText() == fluid);
+        sameFromPort = streamTable->item(i,1)->text()==fromComp->getCompName()
+                &&dynamic_cast<QSpinBox*>(streamTable->cellWidget(i,2))->value()== fromPort;
+        sameToPort = streamTable->item(i,3)->text()==toComp->getCompName()
+                &&dynamic_cast<QSpinBox*>(streamTable->cellWidget(i,4))->value()== toPort;
+        if(/*sameFluid||*/sameFromPort||sameToPort){
+            QMessageBox *mb = new QMessageBox;
+            mb->setText("The new stream is in coflict to existing stream!");
+            mb->exec();
+            return;
+        }
+    }
+
+    int index = streamTable->rowCount();
+    streamTable->insertRow(index);
+
+    QComboBox*combo = new QComboBox;
+    QStringList list(QStringList()<<"s"<<"a"<<"c");
+    combo->insertItems(0,list);
+    combo->setCurrentText(fluid);
+    streamTable->setCellWidget(index,0,combo);
+
+    QTableWidgetItem* item;
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,fromComp->getCompName());
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    streamTable->setItem(index,1,item);
+
+    QSpinBox * sBox;
+    sBox = new QSpinBox;
+    sBox->setValue(fromPort);
+    streamTable->setCellWidget(index,2,sBox);
+
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,toComp->getCompName());
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    streamTable->setItem(index,3,item);
+
+    sBox = new QSpinBox;
+    sBox->setValue(toPort);
+    streamTable->setCellWidget(index,4,sBox);
+
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,"add description");
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
+    streamTable->setItem(index,5,item);
+
+}
+
+void myLinkDialog::removeStream()
+{
+
+}
+
+void myLinkDialog::reverseStream()
+{
+
 }
 
 void myLinkDialog::createStreamGroupBox()
@@ -157,6 +251,9 @@ void myLinkDialog::createStreamGroupBox()
     streamGroupBox->setLayout(mainLayout);
 
     connect(streamDirectionButton,SIGNAL(clicked(bool)),this,SLOT(streamDirectionFlipped()));
+    connect(streamAddButton,SIGNAL(clicked(bool)),this,SLOT(addStream()));
+    connect(streamRemoveButton,SIGNAL(clicked(bool)),this,SLOT(removeStream()));
+    connect(streamReverseButton,SIGNAL(clicked(bool)),this,SLOT(reverseStream()));
 
 }
 
@@ -346,10 +443,11 @@ void myLinkDialog::loadStreamTable()
     streamTable->clearContents();
 
     QComboBox *combo = NULL;
+    QSpinBox *sBox = NULL;
     QStringList fluids;
     fluids<<"s"<<"a"<<"c";
 
-    QTableWidgetItem *fromComp = NULL, *toComp = NULL, *fromOutlet = NULL, *toInlet = NULL, *description = NULL;
+    QTableWidgetItem *fromComp = NULL, *toComp = NULL, *description = NULL;
     streamLink str;
     if(!myLink->myStream.isEmpty()){
         streamTable->setRowCount(myLink->myStream.count());
@@ -368,11 +466,10 @@ void myLinkDialog::loadStreamTable()
             fromComp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             streamTable->setItem(i,1,fromComp);
 
-            fromOutlet = new QTableWidgetItem;
-            fromOutlet->setData(Qt::DisplayRole,str.fromPortNum);
-            fromOutlet->setTextAlignment(Qt::AlignCenter);
-            fromOutlet->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-            streamTable->setItem(i,2,fromOutlet);
+
+            sBox = new QSpinBox;
+            sBox->setValue(str.fromPortNum);
+            streamTable->setCellWidget(i,2,sBox);
 
             toComp = new QTableWidgetItem;
             toComp->setData(Qt::DisplayRole,str.toComp->getCompName());
@@ -380,16 +477,14 @@ void myLinkDialog::loadStreamTable()
             toComp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             streamTable->setItem(i,3,toComp);
 
-            toInlet = new QTableWidgetItem;
-            toInlet->setData(Qt::DisplayRole,str.toPortNum);
-            toInlet->setTextAlignment(Qt::AlignCenter);
-            toInlet->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-            streamTable->setItem(i,4,toInlet);
+            sBox = new QSpinBox;
+            sBox->setValue(str.toPortNum);
+            streamTable->setCellWidget(i,4,sBox);
 
             description = new QTableWidgetItem;
             description->setData(Qt::DisplayRole,str.description);
             description->setTextAlignment(Qt::AlignCenter);
-            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             streamTable->setItem(i,5,description);
         }
     }
@@ -439,7 +534,7 @@ void myLinkDialog::loadVariableTable()
             description = new QTableWidgetItem;
             description->setData(Qt::DisplayRole,var.description);
             description->setTextAlignment(Qt::AlignCenter);
-            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             variableTable->setItem(i,4,description);
         }
     }
@@ -500,7 +595,7 @@ void myLinkDialog::loadIterationTable()
             description = new QTableWidgetItem;
             description->setData(Qt::DisplayRole,var.description);
             description->setTextAlignment(Qt::AlignCenter);
-            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             variableTable->setItem(i,6,description);
         }
     }

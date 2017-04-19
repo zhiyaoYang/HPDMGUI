@@ -6,7 +6,7 @@ todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* linkDialog: change system data
-	* componentDialog: change system data
+	* componentDialog: apply valid check
 	* replace icon with pic (center link ends)
 	
 	* system level settings (referigerant)
@@ -23,7 +23,7 @@ todo list:
 
 
 	
-last updated: 4/7/2017
+last updated: 4/19/2017
 
 
 note:

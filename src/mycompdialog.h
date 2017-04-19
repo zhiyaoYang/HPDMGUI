@@ -28,6 +28,7 @@ private slots:
     void variableResetClicked();
     void parameterResetClicked();
     void variableHideToggled();
+    void showAllLinkClicked(bool show);
 
 private:
 
@@ -69,6 +70,7 @@ private:
 
     QPushButton *doneButton;
     QPushButton *cancelButton;
+    QPushButton *showAllLinkButton;
 
     bool variableEmptyHidden;
 

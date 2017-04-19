@@ -25,6 +25,7 @@
 component * dummy;
 component * head;
 component * tempComponent;
+myMainwindow * mWindow;
 
 QString sceneAction;
 
@@ -85,6 +86,16 @@ bool myMainwindow::openHPDM()
 {
     QString name = QFileDialog::getOpenFileName(this,"Open a .hpdm file","./","HPDM files(*.hpdm)");
     if(name!=""){
+        QStringList list = name.split("/");
+        list.removeLast();
+        caseDirectory = list.join("/");
+        QPixmap pic(caseDirectory+"/System.png");
+        pic = pic.scaled(400,400,Qt::KeepAspectRatio);
+        sysPic = new QLabel(sysPicDock);
+        sysPic->setPixmap(pic);
+        sysPicDock->setWidget(sysPic);
+        enableDock(true);
+
         return loadHPDMFile(name);
     }
     else{
@@ -396,30 +407,17 @@ void myMainwindow::createDockWindows()
 {
     sysPicDock = new QDockWidget(tr("System Diagram"),this);
     sysPicDock->setAllowedAreas(Qt::RightDockWidgetArea);
-
-    QPixmap pic("System.png");
-    pic = pic.scaled(400,400,Qt::KeepAspectRatio);
-    sysPic = new QLabel(sysPicDock);
-    sysPic->setPixmap(pic);
-    sysPicDock->setWidget(sysPic);
     addDockWidget(Qt::RightDockWidgetArea,sysPicDock);
-
+    sysPicDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    sysPicDock->setVisible(false);
 
     compListDock = new QDockWidget(tr("Component List"),this);
     compListDock->setAllowedAreas(Qt::RightDockWidgetArea);
-    introduction = new QListWidget(compListDock);
-    introduction->addItems(QStringList()
-                           <<"index"
-                           <<"description"
-                           <<"properties");
-    compListDock->setWidget(introduction);
     addDockWidget(Qt::RightDockWidgetArea,compListDock);
-
-    addDockWidget(Qt::RightDockWidgetArea,sysPicDock);
-    addDockWidget(Qt::RightDockWidgetArea,compListDock);
-
-    sysPicDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
     compListDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    compListDock->setVisible(false);
+
+
 
 }
 
@@ -632,6 +630,7 @@ bool myMainwindow::loadHPDMFile(QString name)
     }
 
     enableLink(false);
+    zoomToFit();
 
     return true;
 }
