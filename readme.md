@@ -5,9 +5,9 @@ The HPDMGUI is the desktop GUI application for the HPDM tool developed by ORNL.
 todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
-	* linkDialog: change system data
-	* componentDialog: apply valid check
-	* replace icon with pic (center link ends)
+	* linkDialog: add/remove var/successive
+	* replace component icon with pic
+	* component list dock (maybe used for more func based on item selected?)
 	
 	* system level settings (referigerant)
 	* write into .hpdm file
@@ -15,6 +15,7 @@ todo list:
 	* read and display results
 	
 * later version
+	* dialogs: apply valid check
 	* designated icon/schematic for each component
 	* system level overview table (master panel)
 	* fomula: special component

@@ -226,6 +226,75 @@ void myLinkDialog::reverseStream()
     }
 }
 
+void myLinkDialog::addVariable()
+{
+    QString fromMember = variableMemberCombobox1->currentText();
+    QString toMember = variableMemberCombobox2->currentText();
+
+    bool fromSame, toSame;
+    for(int i = 0; i< variableTable->rowCount(); i++){
+        fromSame = (variableTable->item(i,1)->text()==fromMember);
+        toSame = (variableTable->item(i,3)->text()==toMember);
+
+        if(fromSame&&toSame){
+            QMessageBox *mb = new QMessageBox;
+            mb->setText("Variable link already exists!");
+            mb->exec();
+            return;
+        }
+    }
+
+    QTableWidgetItem * item;
+    int row = variableTable->rowCount();
+    variableTable->insertRow(row);
+
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,myComp1->getCompName());
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    variableTable->setItem(row,0,item);
+
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,fromMember);
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    variableTable->setItem(row,1,item);
+
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,myComp2->getCompName());
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    variableTable->setItem(row,2,item);
+
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,toMember);
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    variableTable->setItem(row,3,item);
+
+    item = new QTableWidgetItem;
+    item->setData(Qt::DisplayRole,"Add variable link description");
+    item->setTextAlignment(Qt::AlignCenter);
+    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
+    variableTable->setItem(row,4,item);
+}
+
+void myLinkDialog::removeVariable()
+{
+    int row = variableTable->currentRow();
+    if(row ==-1){
+        QMessageBox *mb = new QMessageBox;
+        mb->setText("Please select the variable link to remove!");
+        mb->exec();
+        return;
+    }
+    else{
+        variableTable->removeRow(row);
+        return;
+    }
+
+}
+
 void myLinkDialog::createStreamGroupBox()
 {
     //create and initiate items
@@ -336,6 +405,9 @@ void myLinkDialog::createVariableGroupBox()
     mainLayout->addLayout(buttonRowLayout);
 
     variableGroupBox->setLayout(mainLayout);
+
+    connect(variableAddButton,SIGNAL(clicked(bool)),this,SLOT(addVariable()));
+    connect(variableRemoveButton,SIGNAL(clicked(bool)),this,SLOT(removeVariable()));
 
 }
 
@@ -526,10 +598,6 @@ void myLinkDialog::loadVariableTable()
 {
     variableTable->clearContents();
 
-    QComboBox *combo = NULL;
-    QStringList types;
-    types<<"V"<<"P";
-
     QTableWidgetItem *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
     varLink var;
     if(!myLink->myVar.isEmpty()){
@@ -545,7 +613,7 @@ void myLinkDialog::loadVariableTable()
             variableTable->setItem(i,0,comp1);
 
             member1 = new QTableWidgetItem;
-            member1->setData(Qt::DisplayRole,var.fromVarNum);
+            member1->setData(Qt::DisplayRole,myComp1->myVar.at(var.fromVarNum).name);
             member1->setTextAlignment(Qt::AlignCenter);
             member1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             variableTable->setItem(i,1,member1);
@@ -557,7 +625,7 @@ void myLinkDialog::loadVariableTable()
             variableTable->setItem(i,2,comp2);
 
             member2 = new QTableWidgetItem;
-            member2->setData(Qt::DisplayRole,var.toVarNum);
+            member2->setData(Qt::DisplayRole,myComp2->myVar.at(var.toVarNum).name);
             member2->setTextAlignment(Qt::AlignCenter);
             member2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             variableTable->setItem(i,3,member2);

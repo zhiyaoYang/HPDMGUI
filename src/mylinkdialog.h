@@ -37,6 +37,9 @@ private slots:
     void removeStream();
     void reverseStream();
 
+    void addVariable();
+    void removeVariable();
+
 private:
 
     void createStreamGroupBox();
