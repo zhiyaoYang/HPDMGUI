@@ -65,8 +65,8 @@ void myScene::drawComponent(component * comp,double x, double y)
     head->setIndex(tempIndex+1);
 
 
-    QPixmap pic("pump-icon.png");
-    pic = pic.scaled(60,60,Qt::KeepAspectRatio);
+    QPixmap pic("compPic/icons/exampleIcon.png");
+    pic = pic.scaled(60,60,Qt::KeepAspectRatioByExpanding);
     head->setPixmap(pic);
 
     head->draw();

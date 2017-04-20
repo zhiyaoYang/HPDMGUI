@@ -154,6 +154,7 @@ void myMainwindow::enableDock(bool eDock)
 {
     sysPicDock->setVisible(eDock);
     compListDock->setVisible(eDock);
+    zoomToFit();
 
 }
 

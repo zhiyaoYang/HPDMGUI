@@ -2,6 +2,8 @@
 
 The HPDMGUI is the desktop GUI application for the HPDM tool developed by ORNL.
 
+See the latest web-version of HPDM at http://hpdmflex.ornl.gov.
+
 todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
