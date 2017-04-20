@@ -665,8 +665,13 @@ void myLinkDialog::loadIterationTable()
             combo->setCurrentText(suc.fromType);
             iterationTable->setCellWidget(i,1,combo);
 
+            QString name =
+                    (suc.fromType=="V")?
+                        suc.fromComp->myVar.at(suc.fromNum).name
+                      :suc.fromComp->myPar.at(suc.fromNum).name;
+
             member1 = new QTableWidgetItem;
-            member1->setData(Qt::DisplayRole,suc.fromNum);
+            member1->setData(Qt::DisplayRole,name);
             member1->setTextAlignment(Qt::AlignCenter);
             member1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             iterationTable->setItem(i,2,member1);
@@ -683,8 +688,12 @@ void myLinkDialog::loadIterationTable()
             combo->setCurrentText(suc.toType);
             iterationTable->setCellWidget(i,4,combo);
 
+            name = (suc.toType=="V")?
+                        suc.toComp->myVar.at(suc.toNum).name
+                      :suc.toComp->myPar.at(suc.toNum).name;
+
             member2 = new QTableWidgetItem;
-            member2->setData(Qt::DisplayRole,suc.toNum);
+            member2->setData(Qt::DisplayRole,name);
             member2->setTextAlignment(Qt::AlignCenter);
             member2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             iterationTable->setItem(i,5,member2);
@@ -694,8 +703,6 @@ void myLinkDialog::loadIterationTable()
             description->setTextAlignment(Qt::AlignCenter);
             description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             iterationTable->setItem(i,6,description);
-
-            qDebug()<<"adding iteration link"<<suc.fromComp->getCompName()<<suc.toComp->getCompName();
         }
     }
 }
