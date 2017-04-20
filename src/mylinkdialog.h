@@ -40,6 +40,10 @@ private slots:
     void addVariable();
     void removeVariable();
 
+    void addIteration();
+    void removeIteration();
+    void reverseIteration();
+
 private:
 
     void createStreamGroupBox();

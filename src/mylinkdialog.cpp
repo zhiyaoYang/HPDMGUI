@@ -295,6 +295,21 @@ void myLinkDialog::removeVariable()
 
 }
 
+void myLinkDialog::addIteration()
+{
+
+}
+
+void myLinkDialog::removeIteration()
+{
+
+}
+
+void myLinkDialog::reverseIteration()
+{
+
+}
+
 void myLinkDialog::createStreamGroupBox()
 {
     //create and initiate items
@@ -454,6 +469,7 @@ void myLinkDialog::createIterationGroupBox()
     thirdRowLayout->addWidget(iterationMemberCombobox2);
 
     buttonRowLayout->insertStretch(0);
+    buttonRowLayout->addWidget(iterationReverseButton);
     buttonRowLayout->addWidget(iterationAddButton);
     buttonRowLayout->addWidget(iterationRemoveButton);
 
@@ -470,6 +486,9 @@ void myLinkDialog::createIterationGroupBox()
     connect(iterationVPCombobox1,SIGNAL(currentTextChanged(QString)),this,SLOT(vp1ComboChanged(QString)));
     connect(iterationVPCombobox2,SIGNAL(currentTextChanged(QString)),this,SLOT(vp2ComboChanged(QString)));
 
+    connect(iterationReverseButton,SIGNAL(clicked(bool)),this,SLOT(reverseIteration()));
+    connect(iterationAddButton,SIGNAL(clicked(bool)),this,SLOT(addIteration()));
+    connect(iterationRemoveButton,SIGNAL(clicked(bool)),this,SLOT(removeIteration()));
 
     iterationVPCombobox1->setCurrentIndex(0);
     iterationVPCombobox2->setCurrentIndex(0);
