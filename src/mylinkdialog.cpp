@@ -121,7 +121,7 @@ void myLinkDialog::addStream()
         fluid = "s";
     }
 
-    bool sameFluid, sameFromPort, sameToPort;
+    bool sameFromPort, sameToPort;
     component* fromComp = myComp1, *toComp= myComp2;
     int fromPort = streamIOSpinBox1->value(), toPort = streamIOSpinBox2->value(), temp;
     if(streamDirectionButton->text()=="<<<<<"){
@@ -133,12 +133,12 @@ void myLinkDialog::addStream()
     }
 
     for(int i = 0; i < streamTable->rowCount();i++){
-        sameFluid = (dynamic_cast<QComboBox*>(streamTable->cellWidget(i,0))->currentText() == fluid);
+
         sameFromPort = streamTable->item(i,1)->text()==fromComp->getCompName()
                 &&dynamic_cast<QSpinBox*>(streamTable->cellWidget(i,2))->value()== fromPort;
         sameToPort = streamTable->item(i,3)->text()==toComp->getCompName()
                 &&dynamic_cast<QSpinBox*>(streamTable->cellWidget(i,4))->value()== toPort;
-        if(/*sameFluid||*/sameFromPort||sameToPort){
+        if(sameFromPort||sameToPort){
             QMessageBox *mb = new QMessageBox;
             mb->setText("The new stream is in coflict to existing stream!");
             mb->exec();
@@ -204,7 +204,6 @@ void myLinkDialog::reverseStream()
 {
 
     int row = streamTable->currentRow();
-    qDebug()<<row;
     if(row ==-1){
         QMessageBox *mb = new QMessageBox;
         mb->setText("Please select the stream to remove!");
@@ -297,17 +296,130 @@ void myLinkDialog::removeVariable()
 
 void myLinkDialog::addIteration()
 {
+    QString fromMember, toMember, temp, fromVp, toVp;
+    fromMember = iterationMemberCombobox1->currentText();
+    toMember = iterationMemberCombobox2->currentText();
+    fromVp = iterationVPCombobox1->currentText();
+    toVp = iterationVPCombobox2->currentText();
 
+    if(fromMember==""||toMember==""){
+        QMessageBox *mb = new QMessageBox;
+        mb->setText("Please select valid parameter/variable to link!");
+        mb->exec();
+        return;
+    }
+    else{
+        component *fromComp = myComp1, *toComp = myComp2;
+        if(iterationDirectionButton->text()=="<<<<<"){
+            fromComp = myComp2;
+            toComp = myComp1;
+            temp = fromMember;
+            fromMember = toMember;
+            toMember = temp;
+            temp = fromVp;
+            fromVp = toVp;
+            toVp = temp;
+        }
+
+        for(int i = 0; i < iterationTable->rowCount(); i++){
+            if(fromMember==iterationTable->item(i,2)->text()
+                    &&toMember==iterationTable->item(i,5)->text()){
+                QMessageBox *mb = new QMessageBox;
+                mb->setText("The iteration link already exists.");
+                mb->exec();
+                return;
+            }
+        }
+
+
+        int index = iterationTable->rowCount();
+        iterationTable->insertRow(index);
+
+        QTableWidgetItem* item;
+        item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole,fromComp->getCompName());
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        iterationTable->setItem(index,0,item);
+
+        item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole,fromVp);
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        iterationTable->setItem(index,1,item);
+
+        item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole,fromMember);
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        iterationTable->setItem(index,2,item);
+
+        item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole,toVp);
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        iterationTable->setItem(index,3,item);
+
+
+        item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole,toComp->getCompName());
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        iterationTable->setItem(index,4,item);
+
+        item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole,toMember);
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        iterationTable->setItem(index,5,item);
+
+        item = new QTableWidgetItem;
+        item->setData(Qt::DisplayRole,"Please add iteration connection description.");
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+        iterationTable->setItem(index,6,item);
+    }
 }
 
 void myLinkDialog::removeIteration()
 {
+    int row = iterationTable->currentRow();
+    if(row ==-1){
+        QMessageBox *mb = new QMessageBox;
+        mb->setText("Please select the iteration link to remove!");
+        mb->exec();
+        return;
+    }
+    else{
+        iterationTable->removeRow(row);
+        return;
+    }
 
 }
 
 void myLinkDialog::reverseIteration()
 {
+    int row = iterationTable->currentRow();
+    if(row ==-1){
+        QMessageBox *mb = new QMessageBox;
+        mb->setText("Please select the iteration link to remove!");
+        mb->exec();
+        return;
+    }
+    else{
+        QString fromComp, fromVp, fromName;
+        fromComp = iterationTable->item(row,0)->text();
+        fromVp = iterationTable->item(row,1)->text();
+        fromName = iterationTable->item(row,2)->text();
 
+        iterationTable->item(row,0)->setText(iterationTable->item(row,3)->text());
+        iterationTable->item(row,1)->setText(iterationTable->item(row,4)->text());
+        iterationTable->item(row,2)->setText(iterationTable->item(row,5)->text());
+        iterationTable->item(row,3)->setText(fromComp);
+        iterationTable->item(row,4)->setText(fromVp);
+        iterationTable->item(row,5)->setText(fromName);
+        return;
+    }
 }
 
 void myLinkDialog::createStreamGroupBox()
@@ -658,11 +770,7 @@ void myLinkDialog::loadIterationTable()
 {
     iterationTable->clearContents();
 
-    QComboBox *combo = NULL;
-    QStringList types;
-    types<<"Variable"<<"Parameter";
-
-    QTableWidgetItem *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
+    QTableWidgetItem *item = NULL, *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
     successiveLink suc;
 
     qDebug()<<myLink->mySuccessive.count();
@@ -679,10 +787,12 @@ void myLinkDialog::loadIterationTable()
             comp1->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             iterationTable->setItem(i,0,comp1);
 
-            combo = new QComboBox;
-            combo->insertItems(0,types);
-            combo->setCurrentText(suc.fromType);
-            iterationTable->setCellWidget(i,1,combo);
+            item = new QTableWidgetItem;
+            item->setData(Qt::DisplayRole,
+                          (suc.fromType=="V")?"Variable":"Parameter");
+            item->setTextAlignment(Qt::AlignCenter);
+            item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            iterationTable->setItem(i,1,item);
 
             QString name =
                     (suc.fromType=="V")?
@@ -702,10 +812,12 @@ void myLinkDialog::loadIterationTable()
             iterationTable->setItem(i,3,comp2);
 
 
-            combo = new QComboBox;
-            combo->insertItems(0,types);
-            combo->setCurrentText(suc.toType);
-            iterationTable->setCellWidget(i,4,combo);
+            item = new QTableWidgetItem;
+            item->setData(Qt::DisplayRole,
+                          (suc.toType=="V")?"Variable":"Parameter");
+            item->setTextAlignment(Qt::AlignCenter);
+            item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+            iterationTable->setItem(i,4,item);
 
             name = (suc.toType=="V")?
                         suc.toComp->myVar.at(suc.toNum).name
