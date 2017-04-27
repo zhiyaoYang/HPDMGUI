@@ -77,7 +77,7 @@ void myMainwindow::newFile()
 
 }
 
-void myMainwindow::open()
+void myMainwindow::openXML()
 {
 
 }
@@ -103,14 +103,35 @@ bool myMainwindow::openHPDM()
     }
 }
 
-void myMainwindow::save()
+bool myMainwindow::saveHPDM()
+{
+    QString name = QFileDialog::getSaveFileName(this,"Save as a .hpdm file",
+                                                caseDirectory,"HPDM files(*.hpdm)");
+    if(name.split(".").last()=="hpdm"){
+        return saveHPDMFile(name);
+    }
+    else{
+        return false;
+    }
+}
+
+void myMainwindow::saveXML()
 {
 
 }
 
 void myMainwindow::exitProgram()
 {
-    exit(0);
+    QMessageBox * mb= new QMessageBox("Exit HPDM",
+                         "Do you want to exit? All unsaved changes will be lost.",
+                         QMessageBox::Information,
+                         QMessageBox::Yes,
+                         QMessageBox::Cancel,
+                         QMessageBox::NoButton);
+
+    if(mb->exec() == QMessageBox::Yes){
+        exit(0);
+    }
 }
 
 void myMainwindow::newComponent()
@@ -302,21 +323,26 @@ void myMainwindow::createActions()
     newAct->setStatusTip(tr("Create a new case"));
     connect(newAct,&QAction::triggered,this,&myMainwindow::newFile);
 
-    openAct = new QAction(tr("&Open"),this);
+    openXMLAct = new QAction(tr("&Load XML case file"),this);
 //    openAct->setShortcuts(QKeySequence::Open);//crl+O
-    openAct->setStatusTip(tr("Open an existing case"));
-    connect(openAct,&QAction::triggered,this,&myMainwindow::open);
+    openXMLAct->setStatusTip(tr("Load an existing case in XML file format"));
+    connect(openXMLAct,&QAction::triggered,this,&myMainwindow::openXML);
 
 
-    saveAct = new QAction(tr("&Save"),this);
-    saveAct->setShortcuts(QKeySequence::Save);//crl+S
-    saveAct->setStatusTip(tr("Save current case"));
-    connect(saveAct,&QAction::triggered,this,&myMainwindow::save);
+    saveXMLAct = new QAction(tr("&Save XML case file"),this);
+    saveXMLAct->setShortcuts(QKeySequence::Save);//crl+S
+    saveXMLAct->setStatusTip(tr("Save current case in XML file format"));
+    connect(saveXMLAct,&QAction::triggered,this,&myMainwindow::saveXML);
 
-    openHPDMAct = new QAction(tr("&Load .hpdm File"),this);
+    openHPDMAct = new QAction(tr("&Load .hpdm case file"),this);
 //    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
-    openHPDMAct->setStatusTip(tr("Load a .hpdm file"));
+    openHPDMAct->setStatusTip(tr("Load an existing case in .hpdm file format"));
     connect(openHPDMAct,&QAction::triggered,this,&myMainwindow::openHPDM);
+
+    saveHPDMAct = new QAction(tr("&Save .hpdm case file"),this);
+//    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
+    saveHPDMAct->setStatusTip(tr("Save current case in .hpdm file format"));
+    connect(saveHPDMAct,&QAction::triggered,this,&myMainwindow::saveHPDM);
 
     exitAct = new QAction(tr("&Exit"),this);
     exitAct->setStatusTip(tr("Exit HPDM gracefully"));
@@ -382,9 +408,10 @@ void myMainwindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(newAct);
-    fileMenu->addAction(openAct);
+    fileMenu->addAction(saveXMLAct);
+    fileMenu->addAction(openXMLAct);
+    fileMenu->addAction(saveHPDMAct);
     fileMenu->addAction(openHPDMAct);
-    fileMenu->addAction(saveAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
@@ -634,6 +661,11 @@ bool myMainwindow::loadHPDMFile(QString name)
     zoomToFit();
 
     return true;
+}
+
+bool myMainwindow::saveHPDMFile(QString name)
+{
+
 }
 
 void myMainwindow::reportError(QString err)

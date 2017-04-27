@@ -35,9 +35,10 @@ protected:
 private slots:
     //file menu
     void newFile();
-    void open();
+    void openXML();
     bool openHPDM();
-    void save();
+    bool saveHPDM();
+    void saveXML();
     void exitProgram();
 
     //edit menu
@@ -61,6 +62,7 @@ private:
     void createDockWindows();
     void createStatusBar();
     bool loadHPDMFile(QString name);
+    bool saveHPDMFile(QString name);
     void reportError(QString err);
     component* findComp(int i);
 
@@ -74,9 +76,10 @@ private:
     QMenu *helpMenu;
 
     QAction *newAct;
-    QAction *openAct;
+    QAction *openXMLAct;
     QAction *openHPDMAct;
-    QAction *saveAct;
+    QAction *saveHPDMAct;
+    QAction *saveXMLAct;
     QAction *exitAct;
     QAction *newCompAct;
     QAction *newLinkAct;
