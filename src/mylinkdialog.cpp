@@ -42,8 +42,142 @@ myLinkDialog::~myLinkDialog()
 void myLinkDialog::doneClicked()
 {
     //todo: perform validity check first
-    //todo: update system with data input in each text edits
-    accept();
+
+    //todo: check if there is still any link left
+    int streamCount = 0, varCount = 0, iterCount = 0;
+    streamCount = streamTable->rowCount();
+    varCount = variableTable->rowCount();
+    iterCount = iterationTable->rowCount();
+
+    if(streamCount+varCount+iterCount==0){
+        QMessageBox *mb = new QMessageBox("Delete the link",
+                                          "There is no stream/variable/successive link between the two components\n"
+                                          "Do you want to delete this link item?",
+                                          QMessageBox::Information,
+                                          QMessageBox::Yes,
+                                          QMessageBox::Cancel,
+                                          QMessageBox::NoButton);
+        if(mb->exec()==QMessageBox::Yes){
+
+            myComp1->myLinks.remove(myLink);
+            myComp2->myLinks.remove(myLink);
+            delete myLink;
+            accept();
+        }
+        else{
+            //stay in the dialog and do nothing
+        }
+    }
+    else{
+        //todo: update system with data input in each text edits
+
+        myLink->myStream.clear();
+        for(int i = 0; i < streamCount; i++){
+            streamLink s;
+            s.type = dynamic_cast<QComboBox*>(streamTable->cellWidget(i,0))->currentText();
+            if(streamTable->item(i,1)->text()==myComp1->getCompName()){
+                s.fromComp = myComp1;
+                s.toComp = myComp2;
+            }
+            else{
+                s.fromComp = myComp2;
+                s.toComp = myComp1  ;
+            }
+            s.fromPortNum = dynamic_cast<QSpinBox*>(streamTable->cellWidget(i,2))->value();
+            s.toPortNum = dynamic_cast<QSpinBox*>(streamTable->cellWidget(i,4))->value();
+            s.description = streamTable->item(i,5)->text();
+
+            myLink->myStream.append(s);
+        }
+
+        myLink->myVar.clear();
+        for(int i = 0; i < varCount; i++){
+            varLink v;
+            if(variableTable->item(i,0)->text()==myComp1->getCompName()){
+                v.fromComp = myComp1;
+                v.toComp = myComp2;
+            }
+            else{
+                v.fromComp = myComp2;
+                v.toComp = myComp1  ;
+            }
+
+            QString varName;
+            varName = variableTable->item(i,1)->text();
+            for(int j = 0; j < myComp1->myVar.count();j++){
+                if(varName == myComp1->myVar.at(j).name){
+                    v.fromVarNum = j;
+                    break;
+                }
+            }
+            varName = variableTable->item(i,3)->text();
+            for(int j = 0; j < myComp2->myVar.count();j++){
+                if(varName == myComp2->myVar.at(j).name){
+                    v.toVarNum = j;
+                    break;
+                }
+            }
+            v.description = variableTable->item(i,4)->text();
+            myLink->myVar.append(v);
+        }
+
+        myLink->mySuccessive.clear();
+        for(int i = 0; i < iterCount; i++){
+            successiveLink s;
+            if(iterationTable->item(i,0)->text()==myComp1->getCompName()){
+                s.fromComp = myComp1;
+                s.toComp = myComp2;
+            }
+            else{
+                s.fromComp = myComp2;
+                s.toComp = myComp1  ;
+            }
+
+            s.fromType = (iterationTable->item(i,1)->text()=="Variable")?"V":"P";
+            s.toType = (iterationTable->item(i,4)->text()=="Variable")?"V":"P";
+
+
+            QString varName;
+            varName = iterationTable->item(i,2)->text();
+            if(s.fromType=="V"){
+                for(int j = 0; j < myComp1->myVar.count();j++){
+                    if(varName == myComp1->myVar.at(j).name){
+                        s.fromNum = j;
+                        break;
+                    }
+                }
+            }
+            else if(s.fromType=="P"){
+                for(int j = 0; j < myComp1->myPar.count();j++){
+                    if(varName == myComp1->myPar.at(j).name){
+                        s.fromNum = j;
+                        break;
+                    }
+                }
+            }
+            varName = iterationTable->item(i,5)->text();
+            if(s.toType=="V"){
+                for(int j = 0; j < myComp2->myVar.count();j++){
+                    if(varName == myComp2->myVar.at(j).name){
+                        s.toNum = j;
+                        break;
+                    }
+                }
+            }
+            else if(s.toType=="P"){
+                for(int j = 0; j < myComp2->myPar.count();j++){
+                    if(varName == myComp2->myPar.at(j).name){
+                        s.toNum = j;
+                        break;
+                    }
+                }
+            }
+            s.description = iterationTable->item(i,6)->text();
+            myLink->mySuccessive.append(s);
+        }
+
+        accept();
+    }
 
 }
 
@@ -98,7 +232,7 @@ void myLinkDialog::vp1ComboChanged(QString str)
 
 void myLinkDialog::vp2ComboChanged(QString str)
 {
-    if(str=="Parameter"){
+    if(str=="Variable"){
         iterationMemberCombobox2->clear();
         iterationMemberCombobox2->insertItems(0,vars2);
     }
@@ -355,14 +489,14 @@ void myLinkDialog::addIteration()
         iterationTable->setItem(index,2,item);
 
         item = new QTableWidgetItem;
-        item->setData(Qt::DisplayRole,toVp);
+        item->setData(Qt::DisplayRole,toComp->getCompName());
         item->setTextAlignment(Qt::AlignCenter);
         item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
         iterationTable->setItem(index,3,item);
 
 
         item = new QTableWidgetItem;
-        item->setData(Qt::DisplayRole,toComp->getCompName());
+        item->setData(Qt::DisplayRole,toVp);
         item->setTextAlignment(Qt::AlignCenter);
         item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
         iterationTable->setItem(index,4,item);
@@ -581,9 +715,9 @@ void myLinkDialog::createIterationGroupBox()
     thirdRowLayout->addWidget(iterationMemberCombobox2);
 
     buttonRowLayout->insertStretch(0);
-    buttonRowLayout->addWidget(iterationReverseButton);
     buttonRowLayout->addWidget(iterationAddButton);
     buttonRowLayout->addWidget(iterationRemoveButton);
+    buttonRowLayout->addWidget(iterationReverseButton);
 
     mainLayout->addLayout(firstRowLayout);
     mainLayout->addLayout(secondRowLayout);
@@ -773,13 +907,11 @@ void myLinkDialog::loadIterationTable()
     QTableWidgetItem *item = NULL, *comp1 = NULL, *member1 = NULL, *comp2 = NULL, *member2 = NULL, *description = NULL;
     successiveLink suc;
 
-    qDebug()<<myLink->mySuccessive.count();
     if(!myLink->mySuccessive.isEmpty()){
         iterationTable->setRowCount(myLink->mySuccessive.count());
         for(int i = 0; i < myLink->mySuccessive.count();i++){
 
             suc = myLink->mySuccessive.at(i);
-
 
             comp1 = new QTableWidgetItem;
             comp1->setData(Qt::DisplayRole,suc.fromComp->getCompName());
@@ -799,6 +931,7 @@ void myLinkDialog::loadIterationTable()
                         suc.fromComp->myVar.at(suc.fromNum).name
                       :suc.fromComp->myPar.at(suc.fromNum).name;
 
+
             member1 = new QTableWidgetItem;
             member1->setData(Qt::DisplayRole,name);
             member1->setTextAlignment(Qt::AlignCenter);
@@ -811,13 +944,13 @@ void myLinkDialog::loadIterationTable()
             comp2->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             iterationTable->setItem(i,3,comp2);
 
-
             item = new QTableWidgetItem;
             item->setData(Qt::DisplayRole,
                           (suc.toType=="V")?"Variable":"Parameter");
             item->setTextAlignment(Qt::AlignCenter);
             item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             iterationTable->setItem(i,4,item);
+
 
             name = (suc.toType=="V")?
                         suc.toComp->myVar.at(suc.toNum).name
@@ -834,6 +967,7 @@ void myLinkDialog::loadIterationTable()
             description->setTextAlignment(Qt::AlignCenter);
             description->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled|Qt::ItemIsEditable);
             iterationTable->setItem(i,6,description);
+
         }
     }
 }
