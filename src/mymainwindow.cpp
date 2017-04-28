@@ -474,7 +474,9 @@ bool myMainwindow::loadHPDMFile(QString name)
         component * loadComp;
         link* loadLink;
 
-        line = stream.readLine();
+        while(!line.contains("C\t0")){
+            line = stream.readLine();
+        }
         while(!line.contains("End of Components")){
 
             if(QString(line.at(0))== "C"){
@@ -665,6 +667,18 @@ bool myMainwindow::loadHPDMFile(QString name)
 
 bool myMainwindow::saveHPDMFile(QString name)
 {
+    QFile file(name);
+
+    QString heads, components, linkages, tails;
+
+    if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
+        QTextStream stream(&file);
+
+        heads = "! Comment line to describe the system - to be inputted\no	i	g	r	t	y	n";
+
+        stream<<heads;
+        file.close();
+    }
 
 }
 
