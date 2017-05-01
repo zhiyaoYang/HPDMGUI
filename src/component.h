@@ -31,6 +31,7 @@ struct variable{
 };
 
 struct equation{
+    QString eqnString;
     QString description;
 };
 
@@ -79,7 +80,7 @@ public:
     QList<parameter> myPar;
     QList<variable> myVar;
 
-    QString equation;
+    QList<equation> myEqn;
 
 public slots:
 

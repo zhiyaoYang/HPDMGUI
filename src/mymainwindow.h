@@ -73,6 +73,7 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *viewMenu;
     QMenu *helpMenu;
 
     QAction *newAct;
@@ -96,7 +97,7 @@ private:
     QToolBar *myToolBar;
     QListWidget *introduction;
 
-    QStringList equationLines;
+    QStringList batchRunLines;
     QString caseDirectory;
 
 

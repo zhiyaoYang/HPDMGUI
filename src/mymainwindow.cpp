@@ -271,7 +271,7 @@ void myMainwindow::help()
     while(iterator->next!=NULL){
         iterator = iterator->next;
 
-        if(iterator->equation!=""){
+        if(!iterator->myEqn.isEmpty()){
             iterator->parentItem()->hide();
             foreach(link* l,iterator->myLinks){
                 l->hide();
@@ -290,7 +290,7 @@ void myMainwindow::about()
     while(iterator->next!=NULL){
         iterator = iterator->next;
 
-        if(iterator->equation!=""){
+        if(!iterator->myEqn.isEmpty()){
             iterator->parentItem()->show();
             foreach(link* l,iterator->myLinks){
                 l->show();
@@ -407,24 +407,27 @@ void myMainwindow::createActions()
 void myMainwindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
-    fileMenu->addAction(newAct);
-    fileMenu->addAction(saveXMLAct);
-    fileMenu->addAction(openXMLAct);
+//    fileMenu->addAction(newAct);
+//    fileMenu->addAction(saveXMLAct);
+//    fileMenu->addAction(openXMLAct);
     fileMenu->addAction(saveHPDMAct);
     fileMenu->addAction(openHPDMAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
-    editMenu->addAction(newCompAct);
+//    editMenu->addAction(newCompAct);
     editMenu->addAction(newLinkAct);
-    editMenu->addSeparator();
-    editMenu->addAction(enableLinkAct);
-    editMenu->addAction(enableDragAct);
-    editMenu->addAction(enableDockAct);
-    editMenu->addAction(panAct);
-    editMenu->addAction(selectAct);
-    editMenu->addAction(zoomToFitAct);
+
+
+    viewMenu = menuBar()->addMenu(tr("&View"));
+    viewMenu->addAction(enableLinkAct);
+    viewMenu->addAction(enableDragAct);
+    viewMenu->addAction(enableDockAct);
+    viewMenu->addSeparator();
+    viewMenu->addAction(panAct);
+    viewMenu->addAction(selectAct);
+    viewMenu->addAction(zoomToFitAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(helpAct);
@@ -473,6 +476,7 @@ bool myMainwindow::loadHPDMFile(QString name)
         QStringList splitList;
         component * loadComp;
         link* loadLink;
+        batchRunLines.clear();
 
         while(!line.contains("C\t0")){
             line = stream.readLine();
@@ -522,7 +526,7 @@ bool myMainwindow::loadHPDMFile(QString name)
                         v.solvingSetting = splitList.at(2);
                         v.name = splitList.at(3);
                         v.enabled = splitList.at(5);
-                        if(v.solvingSetting=="r"||v.solvingSetting=="o"){
+                        if(splitList.at(6)=="!"){
                             v.value = "";
                             tempStr = splitList.at(7);
                             v.description = tempStr.replace("\"","");
@@ -538,7 +542,15 @@ bool myMainwindow::loadHPDMFile(QString name)
                     }
                     else if(QString(line.at(0))=="E"){
                         //later integrate with equation function?
-                        loadComp->equation = line;
+                        equation eqn;
+                        splitList = line.split("\t",QString::SkipEmptyParts);
+                        int count = splitList.count();
+                        for(int p = 0; p < count - 4;p++){
+                            eqn.eqnString.append(splitList.at(1+p)+"\t");
+                        }
+                        eqn.eqnString.append(splitList.at(count-3));
+                        eqn.description = splitList.last();
+                        loadComp->myEqn.append(eqn);
                     }
                     line = stream.readLine();
                 }
@@ -556,10 +568,13 @@ bool myMainwindow::loadHPDMFile(QString name)
             }
         }
 
+
         while(QString(line.at(0))!="L"){
             line = stream.readLine();
         }
         while(QString(line.at(0))=="L"||QString(line.at(0))=="T"){
+            qDebug()<<line;
+
             //add links
             splitList = line.split("\t",QString::SkipEmptyParts);
 
@@ -652,6 +667,14 @@ bool myMainwindow::loadHPDMFile(QString name)
             }
 
             line = stream.readLine();
+
+        }
+        while(!stream.atEnd()){
+            line = stream.readLine();
+            qDebug()<<line;
+            if(QString(line.at(0))!="!"){
+                batchRunLines.append(QString(line));
+            }
         }
 
 
@@ -669,14 +692,121 @@ bool myMainwindow::saveHPDMFile(QString name)
 {
     QFile file(name);
 
-    QString heads, components, linkages, tails;
 
     if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
         QTextStream stream(&file);
 
+        QString heads, components, linkages, tails;
         heads = "! Comment line to describe the system - to be inputted\no	i	g	r	t	y	n";
 
-        stream<<heads;
+        component *iter = NULL;
+        QSet<link*> includedLinks;
+        QList<streamLink> strLinks;
+        QList<varLink> varLinks;
+        QList<successiveLink> sucLinks;
+        iter = dummy;
+        while(iter->next!=NULL){
+            iter = iter->next;
+
+            if(iter->getTypeIndex()!=38){
+                components.append("\nC\t"+QString::number(iter->getIndex()-1)
+                                  +"\t"+QString::number(iter->getTypeIndex())
+                                  +"\tn\t10001\t\t\t\t!\t"+iter->getCompName()
+                                  +"\t\""+iter->getCompDescription()+"\"");
+            }
+            else{
+                //for refrigerant line
+                components.append("\nC\t"+QString::number(iter->getIndex()-1)
+                                  +"\t"+QString::number(iter->getTypeIndex())
+                                  +"\tn\t10001\t0\t\t\t!\t"+iter->getCompName()
+                                  +"\t\""+iter->getCompDescription()+"\"");
+            }
+
+            for(int i = 0; i < iter->myPar.count();i++){
+                parameter par = iter->myPar.at(i);
+                components.append("\nP\t"+QString::number(par.index)+"\t"
+                                  +par.iORd+"\t"+par.name+"\t0\t\t"+par.value
+                                  +"\t\t\t!\t\""+par.description+"\"");
+            }
+
+            if(!iter->myEqn.isEmpty()){
+
+                variable var = iter->myVar.first();
+                components.append("\nV\t0\t"
+                                  +var.solvingSetting+"\t"+var.name+"\t0\t"
+                                  +var.enabled+"\t"+var.value+"\t\t\t!\t\""
+                                  +var.description+"\"");
+
+                equation eqn = iter->myEqn.first();
+                components.append("\nE\t"+eqn.eqnString+"\t\t\t\t\t!\t"
+                                  +eqn.description);
+            }
+            else{
+                for(int i = 0; i < iter->myVar.count();i++){
+                    variable var = iter->myVar.at(i);
+                    components.append("\nV\t"+QString::number(var.index)+"\t"
+                                      +var.solvingSetting+"\t"+var.name+"\t0\t"
+                                      +var.enabled+"\t"+var.value+"\t\t\t!\t\""
+                                      +var.description+"\"");
+                }
+            }
+
+
+            foreach(link* l, iter->myLinks){
+                if(!includedLinks.contains(l)){
+                    foreach(streamLink strL, l->myStream){
+                        strLinks.append(strL);
+                    }
+                    foreach(varLink varL, l->myVar){
+                        varLinks.append(varL);
+                    }
+                    foreach(successiveLink sucL, l->mySuccessive){
+                        sucLinks.append(sucL);
+                    }
+                    includedLinks.insert(l);
+                }
+            }
+
+        }
+
+        components.append("\n{\tEnd of Components\t}\t\t\t\t\t\t\t!"
+                          "\tend of components and equations\n"
+                          "!\t After this row, input variable linkages, starting with \'L\'");
+
+        for(int i = 0; i < strLinks.count();i++){
+            streamLink strL = strLinks.at(i);
+            linkages.append("\nL\t"+strL.type+"\t"
+                            +QString::number(strL.fromComp->getIndex()-1)+";"
+                            +QString::number(strL.fromPortNum)+"\t"
+                            +QString::number(strL.toComp->getIndex()-1)+";"
+                            +QString::number(strL.toPortNum)
+                            +"\t!\t"+strL.description);
+        }
+        for(int i = 0; i < varLinks.count();i++){
+            varLink varL = varLinks.at(i);
+            linkages.append("\nL\tV\t"
+                            +QString::number(varL.fromComp->getIndex()-1)+";"
+                            +QString::number(varL.fromVarNum)+"\t"
+                            +QString::number(varL.toComp->getIndex()-1)+";"
+                            +QString::number(varL.toVarNum)
+                            +"\t!\t"+varL.description);
+        }
+        for(int i = 0; i < sucLinks.count();i++){
+            successiveLink sucL = sucLinks.at(i);
+            linkages.append("\nT\t"+
+                            QString::number(sucL.fromComp->getIndex()-1)+";"
+                            +sucL.fromType+";"+QString::number(sucL.fromNum)+"\t"
+                            +QString::number(sucL.toComp->getIndex()-1)+";"
+                            +sucL.toType+";"+QString::number(sucL.toNum)+"\t!\t"
+                            +sucL.description);
+        }
+
+        linkages.append("\n!\t After this row, input batch run inputs, starting with \'B\'");
+        foreach(QString l, batchRunLines){
+            tails.append("\n"+l);
+        }
+
+        stream<<heads<<components<<linkages<<tails;
         file.close();
     }
 

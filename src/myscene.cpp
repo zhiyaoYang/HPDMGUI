@@ -140,7 +140,7 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         if(sceneAction == ""){//evoke property dialog
             if(tempItem->zValue()==2){//component
                 component* comp = dynamic_cast<component*>(tempItem);
-                if(comp->equation==""){
+                if(comp->myEqn.isEmpty()){
                     myCompDialog * compDialog = new myCompDialog(comp);
                     compDialog->exec();
                 }
