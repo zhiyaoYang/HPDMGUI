@@ -573,8 +573,6 @@ bool myMainwindow::loadHPDMFile(QString name)
             line = stream.readLine();
         }
         while(QString(line.at(0))=="L"||QString(line.at(0))=="T"){
-            qDebug()<<line;
-
             //add links
             splitList = line.split("\t",QString::SkipEmptyParts);
 
@@ -671,7 +669,6 @@ bool myMainwindow::loadHPDMFile(QString name)
         }
         while(!stream.atEnd()){
             line = stream.readLine();
-            qDebug()<<line;
             if(QString(line.at(0))!="!"){
                 batchRunLines.append(QString(line));
             }
@@ -708,7 +705,7 @@ bool myMainwindow::saveHPDMFile(QString name)
         while(iter->next!=NULL){
             iter = iter->next;
 
-            if(iter->getTypeIndex()!=38){
+            if(iter->getTypeIndex()!=38&&iter->getTypeIndex()!=14){
                 components.append("\nC\t"+QString::number(iter->getIndex()-1)
                                   +"\t"+QString::number(iter->getTypeIndex())
                                   +"\tn\t10001\t\t\t\t!\t"+iter->getCompName()
@@ -771,7 +768,7 @@ bool myMainwindow::saveHPDMFile(QString name)
 
         components.append("\n{\tEnd of Components\t}\t\t\t\t\t\t\t!"
                           "\tend of components and equations\n"
-                          "!\t After this row, input variable linkages, starting with \'L\'");
+                          "!\t After this row; input variable linkages; starting with \'L\'");
 
         for(int i = 0; i < strLinks.count();i++){
             streamLink strL = strLinks.at(i);
