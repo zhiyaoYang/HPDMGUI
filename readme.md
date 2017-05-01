@@ -7,12 +7,6 @@ See the latest web-version of HPDM at http://hpdmflex.ornl.gov.
 todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
-	* linkDialog: add/remove var/successive
-	* replace component icon with pic
-	* component list dock (maybe used for more func based on item selected?)
-	
-	* system level settings (referigerant)
-	* write into .hpdm file
 	* run calculation
 	* read and display results
 	
@@ -23,10 +17,11 @@ todo list:
 	* fomula: special component
 	* sync with external component list & allow adding new component
 	* parametric
+	* component list dock (maybe used for more func based on item selected?)
 
 
 	
-last updated: 4/19/2017
+last updated: 5/1/2017
 
 
 note:
