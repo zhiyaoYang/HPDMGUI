@@ -64,8 +64,13 @@ void myScene::drawComponent(component * comp,double x, double y)
     head->next = NULL;
     head->setIndex(tempIndex+1);
 
+    QString picFileName = "compPic/icons/Component"+QString::number(head->getTypeIndex())+".png";
+    QFile picFile(picFileName);
+    if(!picFile.exists()){
+        picFileName = "compPic/icons/missing.png";
+    }
 
-    QPixmap pic("compPic/icons/exampleIcon.png");
+    QPixmap pic(picFileName);
     pic = pic.scaled(60,60,Qt::KeepAspectRatioByExpanding);
     head->setPixmap(pic);
 
@@ -208,19 +213,27 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
                     }
                     else if(linkedComps.contains(tempComp)){//existing link between the two components
 
-                        mb = new QMessageBox("Making Links",
-                                             "There is already a link between the selected components.\nDo you want to select another component?",
-                                             QMessageBox::Warning,
-                                             QMessageBox::Yes,
-                                             QMessageBox::Cancel,
-                                             QMessageBox::NoButton);
-                        if(mb->exec()== QMessageBox::Yes){
-                            QApplication::setOverrideCursor(QCursor(Qt::CrossCursor));
+                        link* sharedLink;
+                        foreach(link* l, comp->myLinks){
+                            if(l->getComp2()==tempComp||l->getComp1()==tempComp){
+                                sharedLink = l;
+                            }
+                        }
+
+                        if(sharedLink !=NULL){
+                            myLinkDialog * linkDialog = new myLinkDialog(sharedLink);
+                            linkDialog->exec();
                         }
                         else{
-                            selectedComponent.clear();
-                            sceneAction = "";
+                            mb = new QMessageBox;
+                            mb->setText("There is an error in linking.");
+                            mb->exec();
                         }
+
+                        enableDrag(true);
+                        QApplication::restoreOverrideCursor();
+                        selectedComponent.clear();
+                        sceneAction = "";
                     }
                     else{//link two selected components
                         link* myLink = addLink(comp,tempComp);
@@ -232,8 +245,7 @@ void myScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
                         QApplication::restoreOverrideCursor();
 
-
-//http://doc.qt.io/qt-5/qtwidgets-graphicsview-dragdroprobot-example.html
+                        //http://doc.qt.io/qt-5/qtwidgets-graphicsview-dragdroprobot-example.html
                         selectedComponent.clear();
                         sceneAction = "";
                     }
