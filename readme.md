@@ -7,6 +7,7 @@ See the latest web-version of HPDM at http://hpdmflex.ornl.gov.
 todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
+	* debug: new link setup-->load error
 	* run calculation
 	* read and display results
 	
@@ -21,7 +22,7 @@ todo list:
 
 
 	
-last updated: 5/1/2017
+last updated: 5/2/2017
 
 
 note:

@@ -64,10 +64,10 @@ void myScene::drawComponent(component * comp,double x, double y)
     head->next = NULL;
     head->setIndex(tempIndex+1);
 
-    QString picFileName = "compPic/icons/Component"+QString::number(head->getTypeIndex())+".png";
+    QString picFileName = QDir::currentPath()+"/compPic/icons/Component"+QString::number(head->getTypeIndex())+".png";
     QFile picFile(picFileName);
     if(!picFile.exists()){
-        picFileName = "compPic/icons/missing.png";
+        picFileName = QDir::currentPath()+"/compPic/icons/missing.png";
     }
 
     QPixmap pic(picFileName);
