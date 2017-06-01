@@ -282,6 +282,8 @@ void myMainwindow::run()
                                  "Done",
                                  "Calculation finished.",
                                  QMessageBox::Ok);
+
+        //check SysErrLog for further information
     }
     else{
         QMessageBox::information(this,

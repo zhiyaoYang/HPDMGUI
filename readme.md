@@ -8,21 +8,27 @@ todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* debug: new link setup-->load error
-	* run calculation
-	* read and display results
+	* run calculation-->check SysErrLog to determine whether calculation is successful
+	* parametric
+	* XML based file system
+		* save as XML file
+		* load from XML file
+	* case switch handling
+		* ask to save/discard
+		* program close event
 	
 * later version
+	* read and display results
 	* dialogs: apply valid check
 	* designated icon/schematic for each component
 	* system level overview table (master panel)
 	* fomula: special component
 	* sync with external component list & allow adding new component
-	* parametric
 	* component list dock (maybe used for more func based on item selected?)
 
 
 	
-last updated: 5/2/2017
+last updated: 6/1/2017
 
 
 note:
