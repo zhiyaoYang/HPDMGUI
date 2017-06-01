@@ -21,6 +21,7 @@
 #include <QGraphicsItem>
 #include <QMessageBox>
 #include <QString>
+#include <QProcess>
 
 component * dummy;
 component * head;
@@ -261,6 +262,36 @@ void myMainwindow::zoomToFit()
     }
 }
 
+void myMainwindow::run()
+{
+
+    //running the calculation batch file
+    QProcess p;
+    p.setWorkingDirectory(caseDirectory);
+    auto Command = QString("cmd.exe");
+    auto Arguments = QStringList{
+            QString("/C"),
+            caseDirectory+"/RunHPDMFlex.bat"
+    };
+
+    p.start(Command,Arguments);
+    p.waitForFinished(-1);
+
+    if(p.exitCode()==0){
+        QMessageBox::information(this,
+                                 "Done",
+                                 "Calculation finished.",
+                                 QMessageBox::Ok);
+    }
+    else{
+        QMessageBox::information(this,
+                                 "Error",
+                                 "Failed to run the calculation batch file.",
+                                 QMessageBox::Ok);
+
+    }
+}
+
 void myMainwindow::help()
 {
     QStringList list;
@@ -282,21 +313,8 @@ void myMainwindow::help()
 
 void myMainwindow::about()
 {
-    QStringList list;
-    list<<"about"<<"test";
-    fillDock(list);
 
-    component * iterator = dummy;
-    while(iterator->next!=NULL){
-        iterator = iterator->next;
 
-        if(!iterator->myEqn.isEmpty()){
-            iterator->parentItem()->show();
-            foreach(link* l,iterator->myLinks){
-                l->show();
-            }
-        }
-    }
 }
 
 void myMainwindow::initialize()
@@ -392,13 +410,15 @@ void myMainwindow::createActions()
     zoomToFitAct->setStatusTip(tr("Zoom to fit the entire system"));
     connect(zoomToFitAct,&QAction::triggered,this,&myMainwindow::zoomToFit);
 
+    runAct = new QAction(tr("&Run"),this);
+    runAct->setStatusTip(tr("Run calculation"));
+    connect(runAct,&QAction::triggered,this,&myMainwindow::run);
+
     helpAct = new QAction(tr("&Help"),this);
-//    helpAct->setShortcuts(QKeySequence::New);
     helpAct->setStatusTip(tr("Open HPDM documentation"));
     connect(helpAct,&QAction::triggered,this,&myMainwindow::help);
 
     aboutAct = new QAction(tr("&About"),this);
-//    aboutAct->setShortcuts(QKeySequence::New);
     aboutAct->setStatusTip(tr("View information about HPDM"));
     connect(aboutAct,&QAction::triggered,this,&myMainwindow::about);
 
@@ -416,8 +436,11 @@ void myMainwindow::createMenus()
     fileMenu->addAction(exitAct);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu->addAction(runAct);
+    editMenu->addSeparator();
 //    editMenu->addAction(newCompAct);
     editMenu->addAction(newLinkAct);
+
 
 
     viewMenu = menuBar()->addMenu(tr("&View"));
@@ -828,4 +851,9 @@ component *myMainwindow::findComp(int i)
     }
 
     return reComp;
+}
+
+void myMainwindow::closeEvent()
+{
+    exitProgram();
 }

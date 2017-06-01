@@ -49,6 +49,7 @@ private slots:
     void switchPan();
     void switchSelect();
     void zoomToFit();
+    void run();
 
     //help menu
     void help();
@@ -65,6 +66,8 @@ private:
     bool saveHPDMFile(QString name);
     void reportError(QString err);
     component* findComp(int i);
+
+    void closeEvent();
 
     myScene *scene;
     myView *view;
@@ -92,6 +95,7 @@ private:
     QAction *zoomToFitAct;
     QAction *enableDockAct;
     QAction *enableLinkAct;
+    QAction *runAct;
 
     QLabel *sysPic;
     QToolBar *myToolBar;
