@@ -719,7 +719,7 @@ bool myMainwindow::saveHPDMFile(QString name)
         QTextStream stream(&file);
 
         QString heads, components, linkages, tails;
-        heads = "! Comment line to describe the system - to be inputted\no	i	g	r	t	y	n";
+        heads = "! Comment line to describe the system - to be inputted o	i	g	r	t	y	n";
 
         component *iter = NULL;
         QSet<link*> includedLinks;
