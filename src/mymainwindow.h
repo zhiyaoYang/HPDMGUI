@@ -50,6 +50,7 @@ private slots:
     void switchSelect();
     void zoomToFit();
     void run();
+    void paraRunSetup();
 
     //help menu
     void help();
@@ -96,6 +97,7 @@ private:
     QAction *enableDockAct;
     QAction *enableLinkAct;
     QAction *runAct;
+    QAction *paraRunAct;
 
     QLabel *sysPic;
     QToolBar *myToolBar;

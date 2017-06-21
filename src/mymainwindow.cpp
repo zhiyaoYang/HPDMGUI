@@ -10,6 +10,7 @@
 
 #include "mymainwindow.h"
 #include "component.h"
+#include "myparametricdialog.h"
 
 
 #include <QDebug>
@@ -294,6 +295,12 @@ void myMainwindow::run()
     }
 }
 
+void myMainwindow::paraRunSetup()
+{
+    myParametricDialog *pDialog = new myParametricDialog;
+    pDialog->exec();
+}
+
 void myMainwindow::help()
 {
     QStringList list;
@@ -416,6 +423,10 @@ void myMainwindow::createActions()
     runAct->setStatusTip(tr("Run calculation"));
     connect(runAct,&QAction::triggered,this,&myMainwindow::run);
 
+    paraRunAct = new QAction(tr("&Parametric"),this);
+    paraRunAct->setStatusTip(tr("Run parametric calculation"));
+    connect(paraRunAct,&QAction::triggered,this,&myMainwindow::paraRunSetup);
+
     helpAct = new QAction(tr("&Help"),this);
     helpAct->setStatusTip(tr("Open HPDM documentation"));
     connect(helpAct,&QAction::triggered,this,&myMainwindow::help);
@@ -439,6 +450,7 @@ void myMainwindow::createMenus()
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(runAct);
+    editMenu->addAction(paraRunAct);
     editMenu->addSeparator();
 //    editMenu->addAction(newCompAct);
     editMenu->addAction(newLinkAct);
@@ -472,8 +484,6 @@ void myMainwindow::createDockWindows()
     addDockWidget(Qt::RightDockWidgetArea,compListDock);
     compListDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
     compListDock->setVisible(false);
-
-
 
 }
 

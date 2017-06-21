@@ -33,6 +33,9 @@ private slots:
 private:
     
     void initialize();
+    void createOptButtonGroupBox();
+    void createTableGroupBox();
+    void createDialogButtonGroupBox();
 
     bool validCheck();
     
@@ -42,7 +45,9 @@ private:
     
     QLabel * nRunLabel;
     QSpinBox * nRunSpinBox;
+    QLabel * componentLabel;
     QComboBox * compListComboBox;
+    QComboBox * vpLabel;
     QComboBox * vpListComboBox;
     
     QPushButton * addButton;
@@ -51,9 +56,7 @@ private:
     QPushButton * cancelButton;
     
     QTableWidget * paraTable;
-    
-    component * myComponent;
-    
+
 };
 
 #endif // MYPARAMETRICDIALOG_H
