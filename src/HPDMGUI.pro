@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     mymainwindow.cpp \
     mycompdialog.cpp \
     link.cpp \
-    mylinkdialog.cpp
+    mylinkdialog.cpp \
+    myparametricdialog.cpp
 
 HEADERS  += \
     myscene.h \
@@ -28,6 +29,7 @@ HEADERS  += \
     mymainwindow.h \
     mycompdialog.h \
     link.h \
-    mylinkdialog.h
+    mylinkdialog.h \
+    myparametricdialog.h
 
 FORMS    +=

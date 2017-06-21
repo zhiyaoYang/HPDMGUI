@@ -8,11 +8,8 @@ todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* debug: new link setup-->load error
-	* run calculation-->check SysErrLog to determine whether calculation is successful
-	* parametric
-	* XML based file system
-		* save as XML file
-		* load from XML file
+	* parametric batch run
+	* saving graphical location of component for retrieving case (in .hpdm file?)
 	* case switch handling
 		* ask to save/discard
 		* program close event
@@ -28,7 +25,7 @@ todo list:
 
 
 	
-last updated: 6/1/2017
+last updated: 6/20/2017
 
 
 note:

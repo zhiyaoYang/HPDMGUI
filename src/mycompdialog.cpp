@@ -1,6 +1,3 @@
-//todo: add hide/show empty function
-//todo: add accept and update system function
-
 #include "mycompdialog.h"
 #include "mymainwindow.h"
 
