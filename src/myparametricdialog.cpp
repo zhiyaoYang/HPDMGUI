@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QSpacerItem>
 #include <QMessageBox>
+#include <QByteArray>
 
 #include <QDebug>
 
@@ -57,10 +58,13 @@ void myParametricDialog::removeClicked()
         mBox->exec();
     }
     else{
-        QMessageBox * wBox = new QMessageBox(this);
-        wBox->setText("Do you wish to remove column ["
-                      +paraTable->horizontalHeaderItem(column)->text()
-                      +"]? The removed data will be lost.");
+        QMessageBox * wBox = new QMessageBox(this,"Remove column",
+                                             "Do you wish to remove column ["
+                                                +paraTable->horizontalHeaderItem(column)->text()
+                                                    +"]? The removed data will be lost.",
+                                             QMessageBox::Ok,
+                                             QMessageBox::Cancel,
+                                             QMessageBox::NoButton);
         if(wBox->exec()==QMessageBox::Ok){
             paraTable->removeColumn(column);
         }
@@ -81,23 +85,26 @@ void myParametricDialog::cancelClicked()
 
 void myParametricDialog::nRunChanged(int i)
 {
-    QMessageBox * mBox = new QMessageBox(this);
     QString warningText;
     int diff = paraTable->rowCount() - i;
 
     if(diff!=0){
         if(diff < 0){
-            warningText = "Do you want to proceed and extend the table to "
+            warningText = "Do you want to extend the table to "
                     +QString::number(i)
                     +" rows?";
         }
         else if(diff > 0){
-            warningText = "Do you want to proceed and truncate the last "
+            warningText = "Do you want to truncate the last "
                     +QString::number(diff)
                     +" rows?\nAll truncated data will be lost.";
         }
-        mBox->setWindowTitle("Changing row count");
-        mBox->setText(warningText);
+
+        QMessageBox * mBox = new QMessageBox(this,"Changing row count",
+                                             warningText,
+                                             QMessageBox::Ok,
+                                             QMessageBox::Cancel,
+                                             QMessageBox::NoButton);
         if(mBox->exec()==QMessageBox::Ok){
             paraTable->setRowCount(i);
         }
@@ -237,9 +244,84 @@ void myParametricDialog::createDialogButtonGroupBox()
     connect(cancelButton,SIGNAL(clicked(bool)),this,SLOT(cancelClicked()));
 }
 
+void myParametricDialog::paste()
+{
+    QString str = QApplication::clipboard()->text();
+    qDebug()<<"trying to paste:"<<str;
+
+    QStringList rows = str.split('\n');
+    int numRows = rows.count()-1;
+    int numColumns = rows.first().count('\t') +1;
+
+    for(int i = 0; i < numRows;++i){
+        QStringList columns = rows[i].split('\t');
+        for(int j = 0; j < numColumns;++j){
+            QTableWidgetItem * item = paraTable->item(paraTable->currentRow()+i,
+                                                      paraTable->currentColumn()+j);
+            if(item!=NULL&&columns.count()>j){
+                item->setText(columns[j]);
+            }
+        }
+    }
+}
+
 bool myParametricDialog::validCheck()
 {
-    qDebug()<<"valid check";
+    qDebug()<<"check for empty cell";
 
     return true;
+}
+
+void myParametricDialog::onTableItemChanged()
+{
+    selected = paraTable->selectedItems();
+
+    myByteArray.clear();
+
+    int row0 = selected.first()->row();
+    int row1;
+
+    for(int i = 0; i < selected.size();i++)
+    {
+        row1 = selected.at(i)->row();
+
+        if(row1 != row0)
+        {
+            myByteArray.remove(myByteArray.length()-1,1);
+            myByteArray.append("\n");
+            myByteArray.append(selected.at(i)->text());
+            myByteArray.append("\t");
+        }
+        else
+        {
+            myByteArray.append(selected.at(i)->text());
+            myByteArray.append("\t");
+        }
+
+        row0 = row1;
+    }
+    myByteArray.remove(myByteArray.length()-1,1);
+
+
+}
+
+void myParametricDialog::keyPressEvent(QKeyEvent *event)
+{
+
+    if(event->matches(QKeySequence::Copy))
+    {
+        onTableItemChanged();
+        QMimeData * mimeData = new QMimeData();
+        mimeData->setData("text/plain",myByteArray);
+        QApplication::clipboard()->setMimeData(mimeData);
+        qDebug()<<"copied!";
+    }
+    else if(event->matches(QKeySequence::Paste)){
+        paste();
+    }
+    else if(event->key()==Qt::Key_Escape){
+    }
+    else{
+        QDialog::keyPressEvent(event);
+    }
 }

@@ -37,7 +37,11 @@ private:
     void createTableGroupBox();
     void createDialogButtonGroupBox();
 
+    void paste();
     bool validCheck();
+    void onTableItemChanged();
+
+    void keyPressEvent(QKeyEvent * event);
     
     QGroupBox * optButtonGroupBox;
     QGroupBox * tableGroupBox;
@@ -56,6 +60,9 @@ private:
     QPushButton * cancelButton;
     
     QTableWidget * paraTable;
+
+    QList<QTableWidgetItem*> selected;
+    QByteArray myByteArray;
 
 };
 
