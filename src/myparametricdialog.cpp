@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QSpacerItem>
+#include <QMessageBox>
 
 #include <QDebug>
 
@@ -18,12 +19,52 @@ myParametricDialog::myParametricDialog()
 
 void myParametricDialog::addClicked()
 {
+    if(compListComboBox->currentText()!="select component"){
+        int i = paraTable->columnCount();
 
+        QStringList header;
+        for(int j = 0; j < paraTable->columnCount();j++){
+            header.append(paraTable->horizontalHeaderItem(j)->text());
+        }
+        QString selectedVP = compListComboBox->currentText()+":"+vpListComboBox->currentText();
+        if(header.contains(selectedVP)){
+            QMessageBox * mBox = new QMessageBox(this);
+            mBox->setText("The selected parameter/variable is already in the table.");
+            mBox->exec();
+        }
+        else{
+            header.append(selectedVP);
+            paraTable->insertColumn(i);
+            paraTable->setHorizontalHeaderLabels(header);
+
+            paraTable->resizeColumnsToContents();
+        }
+
+    }
+    else{
+        QMessageBox * mBox = new QMessageBox(this);
+        mBox->setText("Please select a parameter/variable from a component.");
+        mBox->exec();
+    }
 }
 
 void myParametricDialog::removeClicked()
 {
-
+    int column = paraTable->currentColumn();
+    if(column == -1){
+        QMessageBox * mBox = new QMessageBox(this);
+        mBox->setText("Please select the column of table to remove.");
+        mBox->exec();
+    }
+    else{
+        QMessageBox * wBox = new QMessageBox(this);
+        wBox->setText("Do you wish to remove column ["
+                      +paraTable->horizontalHeaderItem(column)->text()
+                      +"]? The removed data will be lost.");
+        if(wBox->exec()==QMessageBox::Ok){
+            paraTable->removeColumn(column);
+        }
+    }
 }
 
 void myParametricDialog::runClicked()
@@ -40,7 +81,31 @@ void myParametricDialog::cancelClicked()
 
 void myParametricDialog::nRunChanged(int i)
 {
-    qDebug()<<"run count changed to "<<i;
+    QMessageBox * mBox = new QMessageBox(this);
+    QString warningText;
+    int diff = paraTable->rowCount() - i;
+
+    if(diff!=0){
+        if(diff < 0){
+            warningText = "Do you want to proceed and extend the table to "
+                    +QString::number(i)
+                    +" rows?";
+        }
+        else if(diff > 0){
+            warningText = "Do you want to proceed and truncate the last "
+                    +QString::number(diff)
+                    +" rows?\nAll truncated data will be lost.";
+        }
+        mBox->setWindowTitle("Changing row count");
+        mBox->setText(warningText);
+        if(mBox->exec()==QMessageBox::Ok){
+            paraTable->setRowCount(i);
+        }
+        else{
+            nRunSpinBox->setValue(paraTable->rowCount());
+        }
+    }
+
 }
 
 void myParametricDialog::componentChanged(QString s)
@@ -174,5 +239,7 @@ void myParametricDialog::createDialogButtonGroupBox()
 
 bool myParametricDialog::validCheck()
 {
+    qDebug()<<"valid check";
 
+    return true;
 }

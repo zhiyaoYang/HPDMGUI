@@ -47,7 +47,7 @@ private:
     QSpinBox * nRunSpinBox;
     QLabel * componentLabel;
     QComboBox * compListComboBox;
-    QComboBox * vpLabel;
+    QLabel * vpLabel;
     QComboBox * vpListComboBox;
     
     QPushButton * addButton;
