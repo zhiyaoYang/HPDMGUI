@@ -40,6 +40,8 @@ private:
     void paste();
     bool validCheck();
     void onTableItemChanged();
+    void writeBatchFile();
+    void writeHPDMFile();
 
     void keyPressEvent(QKeyEvent * event);
     

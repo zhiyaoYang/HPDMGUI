@@ -75,7 +75,9 @@ void myParametricDialog::removeClicked()
 void myParametricDialog::runClicked()
 {
     if(validCheck()){
-
+        writeHPDMFile();
+        writeBatchFile();
+        //run the calc
     }
 }
 
@@ -345,6 +347,16 @@ void myParametricDialog::onTableItemChanged()
 
 }
 
+void myParametricDialog::writeBatchFile()
+{
+
+}
+
+void myParametricDialog::writeHPDMFile()
+{
+
+}
+
 void myParametricDialog::keyPressEvent(QKeyEvent *event)
 {
 
@@ -354,7 +366,6 @@ void myParametricDialog::keyPressEvent(QKeyEvent *event)
         QMimeData * mimeData = new QMimeData();
         mimeData->setData("text/plain",myByteArray);
         QApplication::clipboard()->setMimeData(mimeData);
-        qDebug()<<"copied!";
     }
     else if(event->matches(QKeySequence::Paste)){
         paste();
