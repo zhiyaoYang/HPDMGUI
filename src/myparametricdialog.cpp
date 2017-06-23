@@ -58,10 +58,11 @@ void myParametricDialog::removeClicked()
         mBox->exec();
     }
     else{
-        QMessageBox * wBox = new QMessageBox(this,"Remove column",
+        QMessageBox * wBox = new QMessageBox("Remove column",
                                              "Do you wish to remove column ["
                                                 +paraTable->horizontalHeaderItem(column)->text()
                                                     +"]? The removed data will be lost.",
+                                             QMessageBox::Information,
                                              QMessageBox::Ok,
                                              QMessageBox::Cancel,
                                              QMessageBox::NoButton);
@@ -100,8 +101,9 @@ void myParametricDialog::nRunChanged(int i)
                     +" rows?\nAll truncated data will be lost.";
         }
 
-        QMessageBox * mBox = new QMessageBox(this,"Changing row count",
+        QMessageBox * mBox = new QMessageBox("Changing row count",
                                              warningText,
+                                             QMessageBox::Information,
                                              QMessageBox::Ok,
                                              QMessageBox::Cancel,
                                              QMessageBox::NoButton);
@@ -247,19 +249,57 @@ void myParametricDialog::createDialogButtonGroupBox()
 void myParametricDialog::paste()
 {
     QString str = QApplication::clipboard()->text();
-    qDebug()<<"trying to paste:"<<str;
 
     QStringList rows = str.split('\n');
-    int numRows = rows.count()-1;
-    int numColumns = rows.first().count('\t') +1;
 
-    for(int i = 0; i < numRows;++i){
-        QStringList columns = rows[i].split('\t');
-        for(int j = 0; j < numColumns;++j){
-            QTableWidgetItem * item = paraTable->item(paraTable->currentRow()+i,
-                                                      paraTable->currentColumn()+j);
-            if(item!=NULL&&columns.count()>j){
-                item->setText(columns[j]);
+    int numRows = rows.count();
+    int numColumns = 0;
+    for(int j = 0; j < numRows;j++){
+        numColumns = (numColumns<rows.at(j).count('\t')+1)?rows.at(j).count('\t')+1:numColumns;
+    }
+
+    int lastRow = numRows+paraTable->currentRow();
+    bool canceled = false;
+
+    if(lastRow>paraTable->rowCount()){
+        QMessageBox * mBox = new QMessageBox("Expand table?",
+                                             "The dimension of the data in clipboard is larger than current table. "
+                                             "Do you want to expand the table to "+QString::number(lastRow+1)+" rows?",
+                                             QMessageBox::Information,
+                                             QMessageBox::Ok,
+                                             QMessageBox::No,
+                                             QMessageBox::Cancel);
+        int boxReturn = mBox->exec();
+        if(boxReturn==QMessageBox::Ok){
+            paraTable->setRowCount(lastRow);
+        }
+        else if(boxReturn==QMessageBox::No){
+            numRows = paraTable->rowCount()-paraTable->currentRow();
+        }
+        else{
+            canceled = true;
+        }
+    }
+
+    if(!canceled){
+        for(int i = 0; i < numRows;++i){
+            QStringList columns = rows[i].split('\t');
+            QTableWidgetItem * item = NULL;
+            while(columns.count()<numColumns){
+                columns.append("");
+            }
+
+            for(int j = 0; j < numColumns;++j){
+                if(paraTable->currentColumn()+j<paraTable->columnCount()){
+                           <<paraTable->currentRow()+i<<paraTable->currentColumn()+j;
+
+                    item = new QTableWidgetItem;
+                    item->setData(Qt::DisplayRole,columns[j]);
+                    item->setTextAlignment(Qt::AlignCenter);
+                    paraTable->setItem(paraTable->currentRow()+i,
+                                       paraTable->currentColumn()+j,
+                                       item);
+                }
             }
         }
     }
