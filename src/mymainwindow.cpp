@@ -60,7 +60,7 @@ myMainwindow::myMainwindow(QWidget *parent) :
 
     myToolBar->setEnabled(true);
 
-
+    caseDirectory = "./";
 
     initialize();
 }
@@ -76,33 +76,61 @@ void myMainwindow::contextMenuEvent(QContextMenuEvent *event)
 
 void myMainwindow::newFile()
 {
-
-}
-
-void myMainwindow::openXML()
-{
-
+    int askSave = askToSave();
 }
 
 bool myMainwindow::openHPDM()
 {
-    QString name = QFileDialog::getOpenFileName(this,"Open a .hpdm file","./","HPDM files(*.hpdm)");
-    if(name!=""){
-        QStringList list = name.split("/");
-        list.removeLast();
-        caseDirectory = list.join("/");
-        QPixmap pic(caseDirectory+"/System.png");
-        pic = pic.scaled(400,400,Qt::KeepAspectRatio);
-        sysPic = new QLabel(sysPicDock);
-        sysPic->setPixmap(pic);
-        sysPicDock->setWidget(sysPic);
-        enableDock(true);
-
-        return loadHPDMFile(name);
+    if(dummy->next!=NULL){
+        int askSave = askToSave();
+        switch(askSave)
+        {
+        case 0://cancel
+        {
+            break;
+        }
+        case 1://save and proceed
+        {
+            QString sName = QFileDialog::getSaveFileName(this,"Save current case to file:",
+                                                         caseDirectory,"HPDM files(*.hpdm)");
+            bool noSave = false;
+            while(sName==""&&(!noSave))
+            {
+                QMessageBox * mBox = new QMessageBox(this);
+                mBox->addButton("Choose a directory",QMessageBox::YesRole);
+                mBox->addButton("Don's save current case",QMessageBox::NoRole);
+                mBox->setWindowTitle("Warning");
+                mBox->setText("Please choose a directory to save the case!");
+                mBox->setModal(true);
+                mBox->exec();
+                if(mBox->buttonRole(mBox->clickedButton())==QMessageBox::YesRole)
+                    sName = QFileDialog::getSaveFileName(this,"Save current case to file:",
+                                                         caseDirectory,"HPDM files(*.hpdm)");
+                else if(mBox->buttonRole(mBox->clickedButton())==QMessageBox::NoRole)
+                    noSave = true;
+            }
+            saveHPDMFile(sName);
+            QString name = QFileDialog::getOpenFileName(this,"Open a .hpdm file",caseDirectory,"HPDM files(*.hpdm)");
+            if(name!=""){
+                loadHPDMFile(name);
+            }
+        }
+        case 2:
+        {
+            QString name = QFileDialog::getOpenFileName(this,"Open a .hpdm file",caseDirectory,"HPDM files(*.hpdm)");
+            if(name!=""){
+                loadHPDMFile(name);
+            }
+        }
+        }
     }
     else{
-        return false;
+        QString name = QFileDialog::getOpenFileName(this,"Open a .hpdm file",caseDirectory,"HPDM files(*.hpdm)");
+        if(name!=""){
+            loadHPDMFile(name);
+        }
     }
+
 }
 
 bool myMainwindow::saveHPDM()
@@ -115,11 +143,6 @@ bool myMainwindow::saveHPDM()
     else{
         return false;
     }
-}
-
-void myMainwindow::saveXML()
-{
-
 }
 
 void myMainwindow::exitProgram()
@@ -176,7 +199,7 @@ void myMainwindow::enableDrag(bool compDrag)
 void myMainwindow::enableDock(bool eDock)
 {
     sysPicDock->setVisible(eDock);
-    compListDock->setVisible(eDock);
+//    compListDock->setVisible(eDock);
     zoomToFit();
 
 }
@@ -346,28 +369,14 @@ void myMainwindow::initialize()
 void myMainwindow::createActions()
 {
     newAct = new QAction(tr("&New"),this);
-//    newAct->setShortcuts(QKeySequence::New);//crl+N
     newAct->setStatusTip(tr("Create a new case"));
     connect(newAct,&QAction::triggered,this,&myMainwindow::newFile);
 
-    openXMLAct = new QAction(tr("&Load XML case file"),this);
-//    openAct->setShortcuts(QKeySequence::Open);//crl+O
-    openXMLAct->setStatusTip(tr("Load an existing case in XML file format"));
-    connect(openXMLAct,&QAction::triggered,this,&myMainwindow::openXML);
-
-
-    saveXMLAct = new QAction(tr("&Save XML case file"),this);
-    saveXMLAct->setShortcuts(QKeySequence::Save);//crl+S
-    saveXMLAct->setStatusTip(tr("Save current case in XML file format"));
-    connect(saveXMLAct,&QAction::triggered,this,&myMainwindow::saveXML);
-
     openHPDMAct = new QAction(tr("&Load .hpdm case file"),this);
-//    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
     openHPDMAct->setStatusTip(tr("Load an existing case in .hpdm file format"));
     connect(openHPDMAct,&QAction::triggered,this,&myMainwindow::openHPDM);
 
     saveHPDMAct = new QAction(tr("&Save .hpdm case file"),this);
-//    loadHPDMAct->setShortcuts(QKeySequence::Open);//crl+L
     saveHPDMAct->setStatusTip(tr("Save current case in .hpdm file format"));
     connect(saveHPDMAct,&QAction::triggered,this,&myMainwindow::saveHPDM);
 
@@ -376,7 +385,6 @@ void myMainwindow::createActions()
     connect(exitAct,&QAction::triggered,this,&myMainwindow::exitProgram);
 
     newCompAct = new QAction(tr("&New Component"),this);
-//    newCompAct->setShortcuts(QKeySequence::New);
     newCompAct->setStatusTip(tr("Add a new component"));
     connect(newCompAct,&QAction::triggered,this,&myMainwindow::newComponent);
 
@@ -401,7 +409,6 @@ void myMainwindow::createActions()
     panAct->setCheckable(true);
     panAct->setChecked(false);
     connect(panAct,&QAction::triggered,this,&myMainwindow::switchPan);
-
 
     enableLinkAct = new QAction(tr("&Show/Hide Links"),this);
     enableLinkAct->setStatusTip(tr(""));
@@ -479,11 +486,11 @@ void myMainwindow::createDockWindows()
     sysPicDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
     sysPicDock->setVisible(false);
 
-    compListDock = new QDockWidget(tr("Component List"),this);
-    compListDock->setAllowedAreas(Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea,compListDock);
-    compListDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    compListDock->setVisible(false);
+//    compListDock = new QDockWidget(tr("Component List"),this);
+//    compListDock->setAllowedAreas(Qt::RightDockWidgetArea);
+//    addDockWidget(Qt::RightDockWidgetArea,compListDock);
+//    compListDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+//    compListDock->setVisible(false);
 
 }
 
@@ -494,10 +501,23 @@ void myMainwindow::createStatusBar()
 
 bool myMainwindow::loadHPDMFile(QString name)
 {
+    qDebug()<<"clear scene!";
 
-    //save current?
-    //clear scene
+    clearScene();
+
+    qDebug()<<"scene cleared";
+
+    QStringList list = name.split("/");
+    list.removeLast();
+    caseDirectory = list.join("/");
+    QPixmap pic(caseDirectory+"/System.png");
+    pic = pic.scaled(400,400,Qt::KeepAspectRatio);
+    sysPic = new QLabel(sysPicDock);
+    sysPic->setPixmap(pic);
+    sysPicDock->setWidget(sysPic);
+    enableDock(true);
     setWindowTitle("HPDM-"+name);
+
     QFile ofile(name);
     if(!ofile.open(QIODevice::ReadOnly|QIODevice::Text)){
         reportError("Failed to open .hpdm file.");
@@ -606,9 +626,6 @@ bool myMainwindow::loadHPDMFile(QString name)
                     xCoord = 70*loadComp->getIndex();
                     yCoord = 0;
                 }
-
-                qDebug()<<"loading"<<loadComp->getCompName()
-                       <<xCoord<<yCoord;
                 scene->drawComponent(loadComp,xCoord,yCoord);
                 if(true){
                     //loadComp->getTypeIndex()>0 equation components?
@@ -803,10 +820,6 @@ bool myMainwindow::saveHPDMFile(QString name)
             components.append("\nX\t"+QString::number(iter->scenePos().x())
                               +"\t"+QString::number(iter->scenePos().y()));
 
-            qDebug()<<"saving"<<iter->getCompName()
-                   <<iter->scenePos().x()
-                  <<iter->scenePos().y();
-
             foreach(link* l, iter->myLinks){
                 if(!includedLinks.contains(l)){
                     foreach(streamLink strL, l->myStream){
@@ -892,4 +905,60 @@ component *myMainwindow::findComp(int i)
 void myMainwindow::closeEvent()
 {
     exitProgram();
+}
+
+int myMainwindow::askToSave()
+{
+    QMessageBox* askSaveBox = new QMessageBox(this);
+    askSaveBox->addButton(QMessageBox::Ok);
+    askSaveBox->addButton(QMessageBox::No);
+    askSaveBox->addButton(QMessageBox::Cancel);
+    askSaveBox->setWindowTitle("Please select...");
+    askSaveBox->setText("Save current case?");
+    askSaveBox->exec();
+    if(askSaveBox->result()==QMessageBox::Ok)
+    {
+        //save current and proceed
+        return 1;
+    }
+    else if(askSaveBox->result()==QMessageBox::No)
+    {
+        //discard current and proceed
+        return 2;
+    }
+    else
+    {
+        //cancel the action
+        return 0;
+    }
+}
+
+void myMainwindow::clearScene()
+{
+    qDebug()<<"cs 1";
+
+    enableDock(false);
+    setWindowTitle("HPDM");
+
+    qDebug()<<"cs 2";
+
+    component* iter = dummy->next, *delComp = NULL;
+
+    while(iter!=NULL && iter->next!=NULL){
+
+        delComp = iter;
+        iter = iter->next;
+
+        qDebug()<<"cs 3.1"<<delComp->myLinks.count();
+
+//        if(!delComp->myLinks.isEmpty()){
+//            foreach(link* l, delComp->myLinks){
+//                delete l;
+//            }
+//        }
+
+        qDebug()<<"cs 3.2";
+
+        delete delComp;
+    }
 }

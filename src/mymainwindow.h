@@ -35,10 +35,8 @@ protected:
 private slots:
     //file menu
     void newFile();
-    void openXML();
     bool openHPDM();
     bool saveHPDM();
-    void saveXML();
     void exitProgram();
 
     //edit menu
@@ -69,6 +67,8 @@ private:
     component* findComp(int i);
 
     void closeEvent();
+    int askToSave();
+    void clearScene();
 
     myScene *scene;
     myView *view;
@@ -84,7 +84,6 @@ private:
     QAction *openXMLAct;
     QAction *openHPDMAct;
     QAction *saveHPDMAct;
-    QAction *saveXMLAct;
     QAction *exitAct;
     QAction *newCompAct;
     QAction *newLinkAct;
