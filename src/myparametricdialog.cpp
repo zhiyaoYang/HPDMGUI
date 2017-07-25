@@ -293,7 +293,8 @@ void myParametricDialog::paste()
 
             for(int j = 0; j < numColumns;++j){
                 if(paraTable->currentColumn()+j<paraTable->columnCount()){
-                           <<paraTable->currentRow()+i<<paraTable->currentColumn()+j;
+
+                    qDebug()<<paraTable->currentRow()+i<<paraTable->currentColumn()+j;
 
                     item = new QTableWidgetItem;
                     item->setData(Qt::DisplayRole,columns[j]);
