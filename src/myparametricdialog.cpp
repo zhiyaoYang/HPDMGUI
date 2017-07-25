@@ -7,14 +7,16 @@
 #include <QSpacerItem>
 #include <QMessageBox>
 #include <QByteArray>
+#include <QFile>
+#include <QTextStream>
 
 #include <QDebug>
 
 extern component *dummy;
 
-
-myParametricDialog::myParametricDialog()
+myParametricDialog::myParametricDialog(QString caseDir)
 {
+    myCaseDir = caseDir;
     initialize();
 }
 
@@ -39,7 +41,34 @@ void myParametricDialog::addClicked()
             paraTable->setHorizontalHeaderLabels(header);
 
             paraTable->resizeColumnsToContents();
+
+            component*iterator = dummy, *myComp = NULL;
+            bool found = false;
+            while((iterator->next!=NULL)&&(!found)){
+                iterator = iterator->next;
+                if(iterator->getCompName()==compListComboBox->currentText()){
+                    found = true;
+                    myComp = iterator;
+                }
+            }
+
+            QString addStr;
+            if(vpListComboBox->currentIndex()+1>myComp->myPar.count()){
+                addStr = QString::number(myComp->getIndex())
+                              +";V;"
+                              +QString::number(vpListComboBox->currentIndex()-myComp->myPar.count());
+            }
+            else{
+                addStr = QString::number(myComp->getIndex())
+                              +";P;"
+                              +QString::number(vpListComboBox->currentIndex());
+            }
+
+            if(!vpList.contains(addStr)){
+                vpList.append(addStr);
+            }
         }
+
 
     }
     else{
@@ -68,17 +97,22 @@ void myParametricDialog::removeClicked()
                                              QMessageBox::NoButton);
         if(wBox->exec()==QMessageBox::Ok){
             paraTable->removeColumn(column);
+
+            if(paraTable->columnCount()!=vpList.count()){
+                qDebug()<<"list and table don't match!";
+            }
+            else{
+                vpList.removeAt(column);
+            }
         }
     }
 }
 
 void myParametricDialog::runClicked()
 {
-    if(validCheck()){
-        writeHPDMFile();
-        writeBatchFile();
-        //run the calc
-    }
+    writeBatchFile();
+    writeHPDMFile();
+    //run the calc
 }
 
 void myParametricDialog::cancelClicked()
@@ -86,15 +120,16 @@ void myParametricDialog::cancelClicked()
     reject();
 }
 
-void myParametricDialog::nRunChanged(int i)
+void myParametricDialog::nRunChanged()
 {
     QString warningText;
-    int diff = paraTable->rowCount() - i;
+    int newNRun = nRunSpinBox->value();
+    int diff = paraTable->rowCount() - newNRun;
 
     if(diff!=0){
         if(diff < 0){
             warningText = "Do you want to extend the table to "
-                    +QString::number(i)
+                    +QString::number(newNRun)
                     +" rows?";
         }
         else if(diff > 0){
@@ -110,7 +145,7 @@ void myParametricDialog::nRunChanged(int i)
                                              QMessageBox::Cancel,
                                              QMessageBox::NoButton);
         if(mBox->exec()==QMessageBox::Ok){
-            paraTable->setRowCount(i);
+            paraTable->setRowCount(newNRun);
         }
         else{
             nRunSpinBox->setValue(paraTable->rowCount());
@@ -207,7 +242,7 @@ void myParametricDialog::createOptButtonGroupBox()
 
     //connect signal-slot
     connect(compListComboBox,SIGNAL(currentTextChanged(QString)),this,SLOT(componentChanged(QString)));
-    connect(nRunSpinBox,SIGNAL(valueChanged(int)),this,SLOT(nRunChanged(int)));
+    connect(nRunSpinBox,SIGNAL(editingFinished()),this,SLOT(nRunChanged()));
     connect(addButton,SIGNAL(clicked(bool)),this,SLOT(addClicked()));
     connect(removeBotton,SIGNAL(clicked(bool)),this,SLOT(removeClicked()));
 
@@ -308,13 +343,6 @@ void myParametricDialog::paste()
     }
 }
 
-bool myParametricDialog::validCheck()
-{
-    qDebug()<<"check for empty cell";
-
-    return true;
-}
-
 void myParametricDialog::onTableItemChanged()
 {
     selected = paraTable->selectedItems();
@@ -351,11 +379,110 @@ void myParametricDialog::onTableItemChanged()
 void myParametricDialog::writeBatchFile()
 {
 
+    validRun = paraTable->rowCount();
+
+    QFile file(myCaseDir+"/BatchIn.dat");
+    if(file.exists()){
+        file.remove();
+    }
+    if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
+
+        int nRuns = paraTable->rowCount();
+        QString text,row;
+        QStringList rows;
+        QTableWidgetItem* item;
+        bool rowValid = true;
+        for(int i = 0; i < nRuns; i++){
+
+            rowValid = true;
+            row.clear();
+
+            for(int j = 0; j < paraTable->columnCount();j++){
+
+                item = paraTable->item(i,j);
+                if(item){
+                    row.append(paraTable->item(i,j)->text()+"\t");
+                }
+                else{
+                    rowValid = false;
+                }
+            }
+            if(rowValid){
+                rows<<row;
+            }
+            else{
+                validRun --;
+            }
+        }
+
+        qDebug()<<rows<<"valid run"<<validRun;
+
+        QTextStream stream(&file);
+        stream<<"!\tComment:\n";
+        stream<<"N\t"<<validRun<<"\t\"number of runs for processing, and the first row for inputting titles\"\n";
+        stream<<rows.join("\n");
+
+        stream.flush();
+        file.close();
+    }
+    else{
+        qDebug()<<"fail to write to batch file";
+    }
 }
 
 void myParametricDialog::writeHPDMFile()
 {
+    QString batchLine;
 
+    batchLine.append("B\tBatchIn.dat\t");
+    for(int i = 0; i < vpList.count();i++){
+        batchLine.append(vpList.at(i)+"\t");
+    }
+    batchLine.append("!\tParametric input def row");
+
+
+    QString allText;
+    QStringList lineList;
+    QStringList toDel;
+
+
+    QFile file(myCaseDir+"/hpdata1.hpdm");
+    if(file.open(QIODevice::ReadOnly|QIODevice::Text)){
+        QTextStream instream(&file);
+
+        allText = instream.readAll();
+        file.close();
+    }
+    lineList = allText.split("\n");
+
+    int batchRow = 0;
+    for(int i = 0; i < lineList.count(); i++){
+        if(lineList.at(i).at(0)=='B'){
+            toDel.append(lineList.at(i));
+        }
+        if(lineList.at(i).contains("After this row, input batch run inputs")){
+            batchRow = i;
+        }
+
+    }
+    foreach(QString s,toDel){
+        lineList.removeOne(s);
+    }
+
+    lineList.insert(batchRow+1,batchLine);
+    allText = lineList.join("\n");
+
+    QFile dFile(myCaseDir+"/hpdata1.hpdm");
+    if(dFile.exists()){
+        dFile.remove();
+    }
+
+    if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
+        QTextStream outstream(&file);
+        outstream<<allText;
+        outstream.flush();
+        file.close();
+    }
 }
 
 void myParametricDialog::keyPressEvent(QKeyEvent *event)

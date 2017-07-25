@@ -297,7 +297,7 @@ void myMainwindow::run()
 
 void myMainwindow::paraRunSetup()
 {
-    myParametricDialog *pDialog = new myParametricDialog;
+    myParametricDialog *pDialog = new myParametricDialog(caseDirectory);
     pDialog->exec();
 }
 
@@ -839,6 +839,7 @@ bool myMainwindow::saveHPDMFile(QString name)
         }
 
         stream<<heads<<components<<linkages<<tails;
+        stream.flush();
         file.close();
     }
 

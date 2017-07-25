@@ -19,7 +19,7 @@ class myParametricDialog : public QDialog
     
     Q_OBJECT
 public:
-    myParametricDialog();
+    myParametricDialog(QString caseDir);
     
 private slots:
     
@@ -27,7 +27,7 @@ private slots:
     void removeClicked();
     void runClicked();
     void cancelClicked();
-    void nRunChanged(int i);
+    void nRunChanged();
     void componentChanged(QString s);
     
 private:
@@ -38,7 +38,6 @@ private:
     void createDialogButtonGroupBox();
 
     void paste();
-    bool validCheck();
     void onTableItemChanged();
     void writeBatchFile();
     void writeHPDMFile();
@@ -65,6 +64,12 @@ private:
 
     QList<QTableWidgetItem*> selected;
     QByteArray myByteArray;
+
+    QString myCaseDir;
+
+    QStringList vpList;
+
+    int validRun;
 
 };
 
