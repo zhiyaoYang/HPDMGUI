@@ -49,13 +49,6 @@ myScene::myScene()
 
 void myScene::drawComponent(component * comp,double x, double y)
 {
-//    QPen pen(Qt::white);
-//    double width = 30;
-
-//    rect = this->addRect(x-width,y-width,2*width,2*width);
-//    rect->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
-//    rect->setPen(pen);
-//    rect->setZValue(2);
 
 
     int tempIndex = head->getIndex();

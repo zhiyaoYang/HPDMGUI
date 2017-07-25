@@ -39,8 +39,8 @@ private:
 
     void paste();
     void onTableItemChanged();
-    void writeBatchFile();
-    void writeHPDMFile();
+    bool writeBatchFile();
+    bool writeHPDMFile();
 
     void keyPressEvent(QKeyEvent * event);
     

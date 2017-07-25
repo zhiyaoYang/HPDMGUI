@@ -9,6 +9,7 @@
 #include <QByteArray>
 #include <QFile>
 #include <QTextStream>
+#include <QProcess>
 
 #include <QDebug>
 
@@ -110,9 +111,38 @@ void myParametricDialog::removeClicked()
 
 void myParametricDialog::runClicked()
 {
-    writeBatchFile();
-    writeHPDMFile();
-    //run the calc
+    if(writeBatchFile()){
+        if(writeHPDMFile()){
+
+            //running the calculation batch file
+            QProcess p;
+            p.setWorkingDirectory(myCaseDir);
+            auto Command = QString("cmd.exe");
+            auto Arguments = QStringList{
+                    QString("/C"),
+                    myCaseDir+"/RunHPDMFlex.bat"
+            };
+
+            p.start(Command,Arguments);
+            p.waitForFinished(-1);
+
+            if(p.exitCode()==0){
+                QMessageBox::information(this,
+                                         "Done",
+                                         "Calculation finished.",
+                                         QMessageBox::Ok);
+
+                //check SysErrLog for further information
+            }
+            else{
+                QMessageBox::information(this,
+                                         "Error",
+                                         "Failed to run the calculation batch file.",
+                                         QMessageBox::Ok);
+
+            }
+        }
+    }
 }
 
 void myParametricDialog::cancelClicked()
@@ -376,7 +406,7 @@ void myParametricDialog::onTableItemChanged()
 
 }
 
-void myParametricDialog::writeBatchFile()
+bool myParametricDialog::writeBatchFile()
 {
 
     validRun = paraTable->rowCount();
@@ -388,7 +418,7 @@ void myParametricDialog::writeBatchFile()
     if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
 
         int nRuns = paraTable->rowCount();
-        QString text,row;
+        QString row;
         QStringList rows;
         QTableWidgetItem* item;
         bool rowValid = true;
@@ -415,8 +445,6 @@ void myParametricDialog::writeBatchFile()
             }
         }
 
-        qDebug()<<rows<<"valid run"<<validRun;
-
         QTextStream stream(&file);
         stream<<"!\tComment:\n";
         stream<<"N\t"<<validRun<<"\t\"number of runs for processing, and the first row for inputting titles\"\n";
@@ -424,13 +452,16 @@ void myParametricDialog::writeBatchFile()
 
         stream.flush();
         file.close();
+
+        return true;
     }
     else{
         qDebug()<<"fail to write to batch file";
+        return false;
     }
 }
 
-void myParametricDialog::writeHPDMFile()
+bool myParametricDialog::writeHPDMFile()
 {
     QString batchLine;
 
@@ -446,13 +477,18 @@ void myParametricDialog::writeHPDMFile()
     QStringList toDel;
 
 
-    QFile file(myCaseDir+"/hpdata1.hpdm");
+    QFile file(myCaseDir+"/hpdata.hpdm");
     if(file.open(QIODevice::ReadOnly|QIODevice::Text)){
         QTextStream instream(&file);
 
         allText = instream.readAll();
         file.close();
     }
+    else{
+        qDebug()<<"fail to read original data";
+        return false;
+    }
+
     lineList = allText.split("\n");
 
     int batchRow = 0;
@@ -482,6 +518,11 @@ void myParametricDialog::writeHPDMFile()
         outstream<<allText;
         outstream.flush();
         file.close();
+        return true;
+    }
+    else{
+        qDebug()<<"fail to write into hpdm file";
+        return false;
     }
 }
 

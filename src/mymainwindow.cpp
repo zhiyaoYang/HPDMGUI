@@ -511,6 +511,9 @@ bool myMainwindow::loadHPDMFile(QString name)
         QStringList splitList;
         component * loadComp;
         link* loadLink;
+        double xCoord = 0, yCoord = 0;
+        bool hasCord = false;
+
         batchRunLines.clear();
 
         while(!line.contains("C\t0")){
@@ -521,6 +524,7 @@ bool myMainwindow::loadHPDMFile(QString name)
             if(QString(line.at(0))== "C"){
                 //add a new component
                 loadComp = new component;
+                hasCord = false;
 
                 comp = line.split("\t",QString::SkipEmptyParts);
 
@@ -540,7 +544,8 @@ bool myMainwindow::loadHPDMFile(QString name)
                 }
 
                 line = stream.readLine();
-                while(QString(line.at(0))=="P"||QString(line.at(0))=="V"||QString(line.at(0))=="E"){
+
+                while(QString(line.at(0))=="P"||QString(line.at(0))=="V"||QString(line.at(0))=="E"||QString(line.at(0))=="X"){
                     //insert variable/parameters into component
                     if(QString(line.at(0))=="P"){
                         parameter p;
@@ -587,11 +592,24 @@ bool myMainwindow::loadHPDMFile(QString name)
                         eqn.description = splitList.last();
                         loadComp->myEqn.append(eqn);
                     }
+                    else if(QString(line.at(0))=="X"){
+                        splitList = line.split("\t",QString::SkipEmptyParts);
+                        xCoord = splitList.at(1).toDouble();
+                        yCoord = splitList.at(2).toDouble();
+                        hasCord = true;
+                    }
                     line = stream.readLine();
                 }
 
                 //add component into the system
-                scene->drawComponent(loadComp,70*loadComp->getIndex(),0);
+                if(!hasCord){
+                    xCoord = 70*loadComp->getIndex();
+                    yCoord = 0;
+                }
+
+                qDebug()<<"loading"<<loadComp->getCompName()
+                       <<xCoord<<yCoord;
+                scene->drawComponent(loadComp,xCoord,yCoord);
                 if(true){
                     //loadComp->getTypeIndex()>0 equation components?
                 }
@@ -782,7 +800,12 @@ bool myMainwindow::saveHPDMFile(QString name)
                                       +var.description+"\"");
                 }
             }
+            components.append("\nX\t"+QString::number(iter->scenePos().x())
+                              +"\t"+QString::number(iter->scenePos().y()));
 
+            qDebug()<<"saving"<<iter->getCompName()
+                   <<iter->scenePos().x()
+                  <<iter->scenePos().y();
 
             foreach(link* l, iter->myLinks){
                 if(!includedLinks.contains(l)){
