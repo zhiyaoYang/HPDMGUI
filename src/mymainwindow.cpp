@@ -242,6 +242,7 @@ void myMainwindow::zoomToFit()
 
     if(iterator->next!=NULL)
     {
+
         xmax = -fabs(iterator->next->scenePos().x());
         ymax = -fabs(iterator->next->scenePos().y());
 
@@ -501,11 +502,8 @@ void myMainwindow::createStatusBar()
 
 bool myMainwindow::loadHPDMFile(QString name)
 {
-    qDebug()<<"clear scene!";
 
     clearScene();
-
-    qDebug()<<"scene cleared";
 
     QStringList list = name.split("/");
     list.removeLast();
@@ -550,6 +548,8 @@ bool myMainwindow::loadHPDMFile(QString name)
 
 
                 loadComp->setIndex(comp.at(1).toInt());//index
+                qDebug()<<"get component"<<loadComp->getIndex();
+
                 loadComp->setTypeIndex(comp.at(2).toInt());//type index
                 if(QString(comp.at(6))=="!"){
                     //fluid lines/aux components
@@ -627,6 +627,9 @@ bool myMainwindow::loadHPDMFile(QString name)
                     yCoord = 0;
                 }
                 scene->drawComponent(loadComp,xCoord,yCoord);
+
+                qDebug()<<"load comp"<<loadComp->getIndex();
+
                 if(true){
                     //loadComp->getTypeIndex()>0 equation components?
                 }
@@ -642,6 +645,9 @@ bool myMainwindow::loadHPDMFile(QString name)
         while(QString(line.at(0))!="L"){
             line = stream.readLine();
         }
+
+        component* comp1 = NULL;
+        component* comp2 = NULL;
         while(QString(line.at(0))=="L"||QString(line.at(0))=="T"){
             //add links
             splitList = line.split("\t",QString::SkipEmptyParts);
@@ -653,8 +659,10 @@ bool myMainwindow::loadHPDMFile(QString name)
                 int compNum2 = splitList.at(3).split(";").at(0).toInt();
                 int num2 = splitList.at(3).split(";").at(1).toInt();
 
-                component* comp1 = findComp(compNum1+1);
-                component* comp2 = findComp(compNum2+1);
+                comp1 = findComp(compNum1+1);
+                comp2 = findComp(compNum2+1);
+
+                qDebug()<<comp1<<compNum1<<comp2<<compNum2;
 
                 //find out existing connections between two components
                 bool connected = false;
@@ -935,30 +943,25 @@ int myMainwindow::askToSave()
 
 void myMainwindow::clearScene()
 {
-    qDebug()<<"cs 1";
+    component* iter = dummy, *delComp = NULL;
+
+    if(iter->next!=NULL){
+        iter = iter->next;
+    }
+
+    while(iter->next!=NULL){
+
+        delComp = iter;
+
+        iter = iter->next;
+        delete delComp;
+    }
+
+    delComp = iter->next;
+    dummy->next = NULL;
+    head = dummy;
+    delete delComp;
 
     enableDock(false);
     setWindowTitle("HPDM");
-
-    qDebug()<<"cs 2";
-
-    component* iter = dummy->next, *delComp = NULL;
-
-    while(iter!=NULL && iter->next!=NULL){
-
-        delComp = iter;
-        iter = iter->next;
-
-        qDebug()<<"cs 3.1"<<delComp->myLinks.count();
-
-//        if(!delComp->myLinks.isEmpty()){
-//            foreach(link* l, delComp->myLinks){
-//                delete l;
-//            }
-//        }
-
-        qDebug()<<"cs 3.2";
-
-        delete delComp;
-    }
 }
