@@ -8,11 +8,6 @@ todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* debug: new link setup-->load error
-	* parametric batch run
-	* saving graphical location of component for retrieving case (in .hpdm file?)
-	* case switch handling
-		* ask to save/discard
-		* program close event
 	
 * later version
 	* read and display results
@@ -25,7 +20,7 @@ todo list:
 
 
 	
-last updated: 6/20/2017
+last updated: 8/1/2017
 
 
 note:

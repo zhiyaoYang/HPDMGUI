@@ -49,6 +49,7 @@ private slots:
     void zoomToFit();
     void run();
     void paraRunSetup();
+    void showResults();
 
     //help menu
     void help();
@@ -61,6 +62,8 @@ private:
     void createMenus();
     void createDockWindows();
     void createStatusBar();
+
+    QString loadResultFile(QString name);
     bool loadHPDMFile(QString name);
     bool saveHPDMFile(QString name);
     void reportError(QString err);
@@ -97,6 +100,7 @@ private:
     QAction *enableLinkAct;
     QAction *runAct;
     QAction *paraRunAct;
+    QAction *showResultAct;
 
     QLabel *sysPic;
     QToolBar *myToolBar;

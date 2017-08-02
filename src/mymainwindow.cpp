@@ -11,7 +11,7 @@
 #include "mymainwindow.h"
 #include "component.h"
 #include "myparametricdialog.h"
-
+#include "myresultsdialog.h"
 
 #include <QDebug>
 #include <QVBoxLayout>
@@ -303,12 +303,17 @@ void myMainwindow::run()
     p.waitForFinished(-1);
 
     if(p.exitCode()==0){
-        QMessageBox::information(this,
-                                 "Done",
-                                 "Calculation finished.",
-                                 QMessageBox::Ok);
+        QMessageBox * mBox = new QMessageBox(this);
+        mBox->addButton("Show Results",QMessageBox::YesRole);
+        mBox->addButton("Close",QMessageBox::NoRole);
+        mBox->setWindowTitle("Run Successful");
+        mBox->setText("Calculation finished!");
+        mBox->setModal(true);
+        mBox->exec();
+        if(mBox->buttonRole(mBox->clickedButton())==QMessageBox::YesRole){
+            showResults();
+        }
 
-        //check SysErrLog for further information
     }
     else{
         QMessageBox::information(this,
@@ -316,6 +321,7 @@ void myMainwindow::run()
                                  "Failed to run the calculation batch file.",
                                  QMessageBox::Ok);
 
+        //check SysErrLog for further information
     }
 }
 
@@ -323,6 +329,16 @@ void myMainwindow::paraRunSetup()
 {
     myParametricDialog *pDialog = new myParametricDialog(caseDirectory);
     pDialog->exec();
+}
+
+void myMainwindow::showResults()
+{
+    QString results = loadResultFile(caseDirectory + "/out.xls");
+    if(results!=""){
+        myResultsDialog *rDialog
+                = new myResultsDialog(results);
+        rDialog->exec();
+    }
 }
 
 void myMainwindow::help()
@@ -435,6 +451,10 @@ void myMainwindow::createActions()
     paraRunAct->setStatusTip(tr("Run parametric calculation"));
     connect(paraRunAct,&QAction::triggered,this,&myMainwindow::paraRunSetup);
 
+    showResultAct = new QAction(tr("&Show Results"),this);
+    showResultAct->setStatusTip(tr("List calculation results"));
+    connect(showResultAct,&QAction::triggered,this,&myMainwindow::showResults);
+
     helpAct = new QAction(tr("&Help"),this);
     helpAct->setStatusTip(tr("Open HPDM documentation"));
     connect(helpAct,&QAction::triggered,this,&myMainwindow::help);
@@ -459,6 +479,7 @@ void myMainwindow::createMenus()
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(runAct);
     editMenu->addAction(paraRunAct);
+    editMenu->addAction(showResultAct);
     editMenu->addSeparator();
 //    editMenu->addAction(newCompAct);
     editMenu->addAction(newLinkAct);
@@ -498,6 +519,25 @@ void myMainwindow::createDockWindows()
 void myMainwindow::createStatusBar()
 {
 
+}
+
+QString myMainwindow::loadResultFile(QString name)
+{
+    QString fileName = name;
+
+    QFile oFile(fileName);
+
+    if(!oFile.open(QIODevice::ReadOnly|QIODevice::Text)){
+        reportError("Failed to open result file.");
+        return "";
+    }
+    else{
+        QTextStream stream(&oFile);
+        QString line = stream.readAll();
+        stream.flush();
+        oFile.close();
+        return line;
+    }
 }
 
 bool myMainwindow::loadHPDMFile(QString name)
@@ -548,8 +588,6 @@ bool myMainwindow::loadHPDMFile(QString name)
 
 
                 loadComp->setIndex(comp.at(1).toInt());//index
-                qDebug()<<"get component"<<loadComp->getIndex();
-
                 loadComp->setTypeIndex(comp.at(2).toInt());//type index
                 if(QString(comp.at(6))=="!"){
                     //fluid lines/aux components
@@ -628,8 +666,6 @@ bool myMainwindow::loadHPDMFile(QString name)
                 }
                 scene->drawComponent(loadComp,xCoord,yCoord);
 
-                qDebug()<<"load comp"<<loadComp->getIndex();
-
                 if(true){
                     //loadComp->getTypeIndex()>0 equation components?
                 }
@@ -661,9 +697,6 @@ bool myMainwindow::loadHPDMFile(QString name)
 
                 comp1 = findComp(compNum1+1);
                 comp2 = findComp(compNum2+1);
-
-                qDebug()<<comp1<<compNum1<<comp2<<compNum2;
-
                 //find out existing connections between two components
                 bool connected = false;
                 if(!comp1->myLinks.isEmpty()){
