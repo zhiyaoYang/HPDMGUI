@@ -543,6 +543,7 @@ QString myMainwindow::loadResultFile(QString name)
 bool myMainwindow::loadHPDMFile(QString name)
 {
 
+
     clearScene();
 
     QStringList list = name.split("/");
@@ -555,6 +556,7 @@ bool myMainwindow::loadHPDMFile(QString name)
     sysPicDock->setWidget(sysPic);
     enableDock(true);
     setWindowTitle("HPDM-"+name);
+
 
     QFile ofile(name);
     if(!ofile.open(QIODevice::ReadOnly|QIODevice::Text)){
@@ -578,6 +580,7 @@ bool myMainwindow::loadHPDMFile(QString name)
             line = stream.readLine();
         }
         while(!line.contains("End of Components")){
+
 
             if(QString(line.at(0))== "C"){
                 //add a new component
@@ -675,16 +678,19 @@ bool myMainwindow::loadHPDMFile(QString name)
                 //skip the place-holder rows
                 line = stream.readLine();
             }
+
+
         }
 
 
-        while(QString(line.at(0))!="L"){
+        while(QString(line.at(0))!="L"&&QString(line.at(0))!="T"){
             line = stream.readLine();
         }
 
         component* comp1 = NULL;
         component* comp2 = NULL;
         while(QString(line.at(0))=="L"||QString(line.at(0))=="T"){
+
             //add links
             splitList = line.split("\t",QString::SkipEmptyParts);
 

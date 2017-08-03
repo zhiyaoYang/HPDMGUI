@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QProcess>
+#include "myresultsdialog.h"
 
 #include <QDebug>
 
@@ -55,14 +56,16 @@ void myParametricDialog::addClicked()
 
             QString addStr;
             if(vpListComboBox->currentIndex()+1>myComp->myPar.count()){
-                addStr = QString::number(myComp->getIndex())
+                addStr = QString::number(myComp->getIndex()-1)
                               +";V;"
                               +QString::number(vpListComboBox->currentIndex()-myComp->myPar.count());
             }
             else{
-                addStr = QString::number(myComp->getIndex())
+                addStr = QString::number(myComp->getIndex()-1)
                               +";P;"
                               +QString::number(vpListComboBox->currentIndex());
+
+                qDebug()<<"adding"<<addStr;
             }
 
             if(!vpList.contains(addStr)){
@@ -127,18 +130,50 @@ void myParametricDialog::runClicked()
             p.waitForFinished(-1);
 
             if(p.exitCode()==0){
-                QMessageBox::information(this,
-                                         "Done",
-                                         "Calculation finished.",
-                                         QMessageBox::Ok);
+                QMessageBox * mBox = new QMessageBox(this);
+                mBox->addButton("Show Results",QMessageBox::YesRole);
+                mBox->addButton("Close",QMessageBox::NoRole);
 
-                //check SysErrLog for further information
+                //copy of loadResultFile() from mainwindow
+                QFile oFile(myCaseDir + "/out.xls");
+                QString results;
+                QString msg;
+
+                if(!oFile.open(QIODevice::ReadOnly|QIODevice::Text)){
+                    msg = "Failed to open result file.";
+                    results = "";
+                }
+                else{
+                    QTextStream stream(&oFile);
+                    results = stream.readAll();
+                    stream.flush();
+                    oFile.close();
+                    msg = "Calculation finished!";
+                }
+
+
+                mBox->setWindowTitle("Parametric run");
+                mBox->setText(msg);
+                mBox->setModal(true);
+                mBox->exec();
+                if(mBox->buttonRole(mBox->clickedButton())==QMessageBox::YesRole){
+
+                    //copy of showResults() from mainwindow
+                    if(results!=""){
+                        myResultsDialog *rDialog
+                                = new myResultsDialog(results);
+                        rDialog->exec();
+                    }
+
+                }
+
             }
             else{
                 QMessageBox::information(this,
                                          "Error",
                                          "Failed to run the calculation batch file.",
                                          QMessageBox::Ok);
+                //check SysErrLog for further information
 
             }
         }
