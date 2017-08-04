@@ -260,6 +260,14 @@ void myParametricDialog::initialize()
 
     setLayout(gLayout);
 
+    loadExistingBatch();
+
+}
+
+void myParametricDialog::loadExistingBatch()
+{
+    //get batch line and read batch file to initialize the table
+
 }
 
 void myParametricDialog::createOptButtonGroupBox()

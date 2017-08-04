@@ -33,6 +33,7 @@ private slots:
 private:
     
     void initialize();
+    void loadExistingBatch();
     void createOptButtonGroupBox();
     void createTableGroupBox();
     void createDialogButtonGroupBox();

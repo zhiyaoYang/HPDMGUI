@@ -8,19 +8,17 @@ todo list:
 
 * ver 0.0, only for existing .hpdm case, not configuration change (no adding new component), load and write .hpdm file
 	* debug: new link setup-->load error
+	* load existing batch run
 	
 * later version
-	* read and display results
 	* dialogs: apply valid check
 	* designated icon/schematic for each component
 	* system level overview table (master panel)
 	* fomula: special component
 	* sync with external component list & allow adding new component
-	* component list dock (maybe used for more func based on item selected?)
-
 
 	
-last updated: 8/1/2017
+last updated: 8/2/2017
 
 
 note:
